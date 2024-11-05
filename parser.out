@@ -1,0 +1,104 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    DIVIDE
+    TIMES
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> INIT declarations statements FIM
+Rule 2     declarations -> declarations declaration
+Rule 3     declarations -> declaration
+Rule 4     declaration -> INT var_list SEMICOLON
+Rule 5     declaration -> DEC var_list SEMICOLON
+Rule 6     declaration -> TEXT var_list SEMICOLON
+Rule 7     var_list -> var_list COMMA ID
+Rule 8     var_list -> ID
+Rule 9     statements -> statements statement
+Rule 10    statements -> statement
+Rule 11    statement -> assignment
+Rule 12    statement -> conditional
+Rule 13    statement -> loop
+Rule 14    statement -> io_operation
+Rule 15    assignment -> ID ASSIGN expression SEMICOLON
+Rule 16    expression -> expression PLUS term
+Rule 17    expression -> expression MINUS term
+Rule 18    expression -> expression LT term
+Rule 19    expression -> expression GT term
+Rule 20    expression -> expression LE term
+Rule 21    expression -> expression GE term
+Rule 22    expression -> expression EQ term
+Rule 23    expression -> expression NE term
+Rule 24    expression -> term
+Rule 25    term -> ID
+Rule 26    term -> NUM
+Rule 27    term -> LPAREN expression RPAREN
+Rule 28    factor -> NUMBER
+Rule 29    factor -> ID
+Rule 30    factor -> LPAREN expression RPAREN
+Rule 31    conditional -> IF LPAREN expression RPAREN LBRACE statements RBRACE else_statement
+Rule 32    else_statement -> ELSE LBRACE statements RBRACE
+Rule 33    else_statement -> empty
+Rule 34    loop -> WHILE LPAREN expression RPAREN LBRACE statements RBRACE
+Rule 35    loop -> FOR LPAREN assignment SEMICOLON expression SEMICOLON assignment RPAREN LBRACE statements RBRACE
+Rule 36    io_operation -> ESCREVA LPAREN STRING RPAREN SEMICOLON
+Rule 37    io_operation -> ESCREVA LPAREN ID RPAREN SEMICOLON
+Rule 38    empty -> <empty>
+Rule 39    io_operation -> LEIA LPAREN ID RPAREN SEMICOLON
+
+Terminals, with rules where they appear
+
+ASSIGN               : 15
+COMMA                : 7
+DEC                  : 5
+DIVIDE               : 
+ELSE                 : 32
+EQ                   : 22
+ESCREVA              : 36 37
+FIM                  : 1
+FOR                  : 35
+GE                   : 21
+GT                   : 19
+ID                   : 7 8 15 25 29 37 39
+IF                   : 31
+INIT                 : 1
+INT                  : 4
+LBRACE               : 31 32 34 35
+LE                   : 20
+LEIA                 : 39
+LPAREN               : 27 30 31 34 35 36 37 39
+LT                   : 18
+MINUS                : 17
+NE                   : 23
+NUMBER               : 28
+PLUS                 : 16
+RBRACE               : 31 32 34 35
+RPAREN               : 27 30 31 34 35 36 37 39
+SEMICOLON            : 4 5 6 15 35 35 36 37 39
+STRING               : 36
+TEXT                 : 6
+TIMES                : 
+WHILE                : 34
+error                : 
+
+Nonterminals, with rules where they appear
+
+NUM                  : 26
+assignment           : 11 35 35
+conditional          : 12
+declaration          : 2 3
+declarations         : 1 2
+else_statement       : 31
+empty                : 33
+expression           : 15 16 17 18 19 20 21 22 23 27 30 31 34 35
+factor               : 
+io_operation         : 14
+loop                 : 13
+program              : 0
+statement            : 9 10
+statements           : 1 9 31 32 34 35
+term                 : 16 17 18 19 20 21 22 23 24
+var_list             : 4 5 6 7
+

@@ -12,10 +12,9 @@ tokens = [
     'LE', 'GE', 'EQ', 'NE', # Operadores relacionais
     'LPAREN', 'RPAREN', # Parênteses
     'LBRACE', 'RBRACE', # Chaves
-    'COMMA', 'DOT'      # Vírgula e ponto
+    'COMMA', 'SEMICOLON' # Vírgula e ponto e vírgula
 ]
 
-# Palavras reservadas
 reserved = {
     'init': 'INIT',
     'fim': 'FIM',
@@ -26,7 +25,7 @@ reserved = {
     'else': 'ELSE',
     'while': 'WHILE',
     'for': 'FOR',
-    'leia': 'LEIA',
+    'leia': 'LEIA',       
     'escreva': 'ESCREVA'
 }
 
@@ -50,8 +49,8 @@ t_RPAREN  = r'\)'
 t_LBRACE  = r'\{'
 t_RBRACE  = r'\}'
 t_COMMA   = r','
-t_DOT     = r'\.'
-t_ignore  = ' \t'  # Ignorar espaços e tabulações
+t_SEMICOLON = r';' 
+t_ignore  = ' \t'  
 
 # Expressão regular para números
 def t_NUMBER(t):
@@ -84,22 +83,27 @@ def t_error(t):
 # Construir o lexer
 lexer = lex.lex()
 
-
 #-----------------------------------
-
 # Código para testar o Lexer
 if __name__ == "__main__":
     data = '''
     init
-        int a, b, c.
-        dec d.
-        text msg.
-        escreva("Exemplo").
-        a := 5.
+        int a, b, c;
+        dec d;
+        text msg;
+        escreva("Exemplo");
+        a := 5;
         if (a < 10) {
-            escreva(a).
+            escreva(a);
         } else {
-            escreva("Valor muito grande").
+            escreva("Valor muito grande");
+        }
+        while (a < 10) {
+            escreva("Loop enquanto");
+            a := a + 1;
+        }
+        for (a := 0; a < 5; a := a + 1) {
+            escreva("Loop para");
         }
     fim
     '''
