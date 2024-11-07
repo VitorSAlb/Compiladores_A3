@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ASSIGN COMMA DEC DIVIDE ELSE EQ ESCREVA FIM FOR GE GT ID IF INIT INT LBRACE LE LEIA LPAREN LT MINUS NE NUMBER PLUS RBRACE RPAREN SEMICOLON STRING TEXT TIMES WHILEprogram : INIT declarations statements FIMdeclarations : declarations declaration\n                    | declarationdeclaration : INT var_list SEMICOLON\n                   | DEC var_list SEMICOLON\n                   | TEXT var_list SEMICOLONvar_list : var_list COMMA ID\n                | IDstatements : statements statement\n                  | statementstatement : assignment\n                 | conditional\n                 | loop\n                 | io_operationassignment : ID ASSIGN expression SEMICOLONexpression : expression PLUS term\n                  | expression MINUS term\n                  | expression LT term\n                  | expression GT term\n                  | expression LE term\n                  | expression GE term\n                  | expression EQ term\n                  | expression NE term\n                  | termterm : term TIMES factor\n            | term DIVIDE factor\n            | factorfactor : NUMBER\n              | ID\n              | LPAREN expression RPARENconditional : IF LPAREN expression RPAREN LBRACE statements RBRACE else_statementelse_statement : ELSE LBRACE statements RBRACE\n                      | emptyloop : WHILE LPAREN expression RPAREN LBRACE statements RBRACEloop : FOR LPAREN assignment SEMICOLON expression SEMICOLON assignment RPAREN LBRACE statements RBRACEio_operation : ESCREVA LPAREN STRING RPAREN SEMICOLON\n                    | ESCREVA LPAREN ID RPAREN SEMICOLONempty :io_operation : LEIA LPAREN ID RPAREN SEMICOLON'
+_lr_signature = 'leftPLUSMINUSleftTIMESDIVIDEASSIGN COMMA DEC DIVIDE DOT ELSE EQ ESCREVA FIMPROG FOR GE GT ID IF INIT INT LBRACE LE LEIA LPAREN LT MINUS NE NUM PLUS RBRACE RPAREN SEMICOLON TEXT TEXTO TIMES WHILEPrograma : INIT Declara Bloco FIMPROG DOTDeclara : Declara Tipo ListaId SEMICOLON\n               | Tipo ListaId SEMICOLONTipo : INT\n            | DEC\n            | TEXTListaId : ListaId COMMA ID\n               | IDBloco : Bloco Cmd\n             | CmdCmd : CmdLeitura\n           | CmdEscrita\n           | CmdExpr\n           | CmdIf\n           | WhileStmt\n           | ForStmtCmdLeitura : LEIA LPAREN ID RPAREN SEMICOLONCmdEscrita : ESCREVA LPAREN TEXTO RPAREN SEMICOLON\n                  | ESCREVA LPAREN ID RPAREN SEMICOLONCmdExpr : AssignStmt SEMICOLONAssignStmt : ID ASSIGN ExprExpr : Expr PLUS TermoExpr : Expr MINUS TermoExpr : TermoTermo : Termo TIMES FatorTermo : Termo DIVIDE FatorTermo : FatorFator : NUMFator : IDFator : LPAREN Expr RPARENCmdIf : IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON\n             | IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLONOp_rel : LT\n              | GT\n              | LE\n              | GE\n              | NE\n              | EQWhileStmt : WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLONCond : Expr Op_rel ExprForStmt : FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON'
     
-_lr_action_items = {'INIT':([0,],[2,]),'$end':([1,25,],[0,-1,]),'INT':([2,3,4,9,33,35,36,],[5,5,-3,-2,-4,-5,-6,]),'DEC':([2,3,4,9,33,35,36,],[6,6,-3,-2,-4,-5,-6,]),'TEXT':([2,3,4,9,33,35,36,],[7,7,-3,-2,-4,-5,-6,]),'ID':([3,4,5,6,7,8,9,10,11,12,13,14,26,27,28,29,30,31,32,33,34,35,36,42,50,51,52,53,54,55,56,57,58,59,60,64,79,80,82,83,84,85,86,87,88,89,91,93,95,96,97,98,99,100,],[15,-3,22,22,22,15,-2,-10,-11,-12,-13,-14,-9,37,37,37,15,47,48,-4,49,-5,-6,37,-15,37,37,37,37,37,37,37,37,37,37,37,15,15,-36,-37,-39,15,15,15,-38,-34,-31,-33,15,15,15,15,-32,-35,]),'IF':([3,4,8,9,10,11,12,13,14,26,33,35,36,50,79,80,82,83,84,85,86,88,89,91,93,95,96,97,98,99,100,],[16,-3,16,-2,-10,-11,-12,-13,-14,-9,-4,-5,-6,-15,16,16,-36,-37,-39,16,16,-38,-34,-31,-33,16,16,16,16,-32,-35,]),'WHILE':([3,4,8,9,10,11,12,13,14,26,33,35,36,50,79,80,82,83,84,85,86,88,89,91,93,95,96,97,98,99,100,],[17,-3,17,-2,-10,-11,-12,-13,-14,-9,-4,-5,-6,-15,17,17,-36,-37,-39,17,17,-38,-34,-31,-33,17,17,17,17,-32,-35,]),'FOR':([3,4,8,9,10,11,12,13,14,26,33,35,36,50,79,80,82,83,84,85,86,88,89,91,93,95,96,97,98,99,100,],[18,-3,18,-2,-10,-11,-12,-13,-14,-9,-4,-5,-6,-15,18,18,-36,-37,-39,18,18,-38,-34,-31,-33,18,18,18,18,-32,-35,]),'ESCREVA':([3,4,8,9,10,11,12,13,14,26,33,35,36,50,79,80,82,83,84,85,86,88,89,91,93,95,96,97,98,99,100,],[19,-3,19,-2,-10,-11,-12,-13,-14,-9,-4,-5,-6,-15,19,19,-36,-37,-39,19,19,-38,-34,-31,-33,19,19,19,19,-32,-35,]),'LEIA':([3,4,8,9,10,11,12,13,14,26,33,35,36,50,79,80,82,83,84,85,86,88,89,91,93,95,96,97,98,99,100,],[20,-3,20,-2,-10,-11,-12,-13,-14,-9,-4,-5,-6,-15,20,20,-36,-37,-39,20,20,-38,-34,-31,-33,20,20,20,20,-32,-35,]),'FIM':([8,10,11,12,13,14,26,50,82,83,84,88,89,91,93,99,100,],[25,-10,-11,-12,-13,-14,-9,-15,-36,-37,-39,-38,-34,-31,-33,-32,-35,]),'RBRACE':([10,11,12,13,14,26,50,82,83,84,85,86,88,89,91,93,97,98,99,100,],[-10,-11,-12,-13,-14,-9,-15,-36,-37,-39,88,89,-38,-34,-31,-33,99,100,-32,-35,]),'ASSIGN':([15,],[27,]),'LPAREN':([16,17,18,19,20,27,28,29,42,51,52,53,54,55,56,57,58,59,60,64,],[28,29,30,31,32,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,]),'SEMICOLON':([21,22,23,24,37,38,39,40,41,45,49,50,65,66,67,68,69,70,71,72,73,74,75,76,77,78,81,],[33,-8,35,36,-29,50,-24,-27,-28,64,-7,-15,82,83,84,-16,-17,-18,-19,-20,-21,-22,-23,-25,-26,-30,87,]),'COMMA':([21,22,23,24,49,],[34,-8,34,34,-7,]),'NUMBER':([27,28,29,42,51,52,53,54,55,56,57,58,59,60,64,],[41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,]),'STRING':([31,],[46,]),'TIMES':([37,39,40,41,68,69,70,71,72,73,74,75,76,77,78,],[-29,59,-27,-28,59,59,59,59,59,59,59,59,-25,-26,-30,]),'DIVIDE':([37,39,40,41,68,69,70,71,72,73,74,75,76,77,78,],[-29,60,-27,-28,60,60,60,60,60,60,60,60,-25,-26,-30,]),'PLUS':([37,38,39,40,41,43,44,61,68,69,70,71,72,73,74,75,76,77,78,81,],[-29,51,-24,-27,-28,51,51,51,-16,-17,-18,-19,-20,-21,-22,-23,-25,-26,-30,51,]),'MINUS':([37,38,39,40,41,43,44,61,68,69,70,71,72,73,74,75,76,77,78,81,],[-29,52,-24,-27,-28,52,52,52,-16,-17,-18,-19,-20,-21,-22,-23,-25,-26,-30,52,]),'LT':([37,38,39,40,41,43,44,61,68,69,70,71,72,73,74,75,76,77,78,81,],[-29,53,-24,-27,-28,53,53,53,-16,-17,-18,-19,-20,-21,-22,-23,-25,-26,-30,53,]),'GT':([37,38,39,40,41,43,44,61,68,69,70,71,72,73,74,75,76,77,78,81,],[-29,54,-24,-27,-28,54,54,54,-16,-17,-18,-19,-20,-21,-22,-23,-25,-26,-30,54,]),'LE':([37,38,39,40,41,43,44,61,68,69,70,71,72,73,74,75,76,77,78,81,],[-29,55,-24,-27,-28,55,55,55,-16,-17,-18,-19,-20,-21,-22,-23,-25,-26,-30,55,]),'GE':([37,38,39,40,41,43,44,61,68,69,70,71,72,73,74,75,76,77,78,81,],[-29,56,-24,-27,-28,56,56,56,-16,-17,-18,-19,-20,-21,-22,-23,-25,-26,-30,56,]),'EQ':([37,38,39,40,41,43,44,61,68,69,70,71,72,73,74,75,76,77,78,81,],[-29,57,-24,-27,-28,57,57,57,-16,-17,-18,-19,-20,-21,-22,-23,-25,-26,-30,57,]),'NE':([37,38,39,40,41,43,44,61,68,69,70,71,72,73,74,75,76,77,78,81,],[-29,58,-24,-27,-28,58,58,58,-16,-17,-18,-19,-20,-21,-22,-23,-25,-26,-30,58,]),'RPAREN':([37,39,40,41,43,44,46,47,48,50,61,68,69,70,71,72,73,74,75,76,77,78,90,],[-29,-24,-27,-28,62,63,65,66,67,-15,78,-16,-17,-18,-19,-20,-21,-22,-23,-25,-26,-30,94,]),'LBRACE':([62,63,92,94,],[79,80,95,96,]),'ELSE':([88,],[92,]),}
+_lr_action_items = {'INIT':([0,],[2,]),'$end':([1,38,],[0,-1,]),'INT':([2,3,36,39,],[5,5,-3,-2,]),'DEC':([2,3,36,39,],[6,6,-3,-2,]),'TEXT':([2,3,36,39,],[7,7,-3,-2,]),'LEIA':([3,8,10,11,12,13,14,15,16,27,32,36,39,72,78,79,81,85,87,90,91,94,95,97,98,100,101,103,],[17,17,-10,-11,-12,-13,-14,-15,-16,-9,-20,-3,-2,-17,-18,-19,17,17,17,17,-39,17,-31,17,17,17,-41,-32,]),'ESCREVA':([3,8,10,11,12,13,14,15,16,27,32,36,39,72,78,79,81,85,87,90,91,94,95,97,98,100,101,103,],[19,19,-10,-11,-12,-13,-14,-15,-16,-9,-20,-3,-2,-17,-18,-19,19,19,19,19,-39,19,-31,19,19,19,-41,-32,]),'IF':([3,8,10,11,12,13,14,15,16,27,32,36,39,72,78,79,81,85,87,90,91,94,95,97,98,100,101,103,],[21,21,-10,-11,-12,-13,-14,-15,-16,-9,-20,-3,-2,-17,-18,-19,21,21,21,21,-39,21,-31,21,21,21,-41,-32,]),'WHILE':([3,8,10,11,12,13,14,15,16,27,32,36,39,72,78,79,81,85,87,90,91,94,95,97,98,100,101,103,],[22,22,-10,-11,-12,-13,-14,-15,-16,-9,-20,-3,-2,-17,-18,-19,22,22,22,22,-39,22,-31,22,22,22,-41,-32,]),'FOR':([3,8,10,11,12,13,14,15,16,27,32,36,39,72,78,79,81,85,87,90,91,94,95,97,98,100,101,103,],[23,23,-10,-11,-12,-13,-14,-15,-16,-9,-20,-3,-2,-17,-18,-19,23,23,23,23,-39,23,-31,23,23,23,-41,-32,]),'ID':([3,4,5,6,7,8,9,10,11,12,13,14,15,16,27,29,30,31,32,33,34,35,36,37,39,46,55,56,57,58,62,63,64,65,66,67,68,70,71,72,78,79,81,85,86,87,90,91,94,95,97,98,100,101,103,],[18,25,-4,-5,-6,18,25,-10,-11,-12,-13,-14,-15,-16,-9,40,41,48,-20,41,41,18,-3,53,-2,41,41,41,41,41,41,-33,-34,-35,-36,-37,-38,41,41,-17,-18,-19,18,18,18,18,18,-39,18,-31,18,18,18,-41,-32,]),'FIMPROG':([8,10,11,12,13,14,15,16,27,32,72,78,79,91,95,101,103,],[26,-10,-11,-12,-13,-14,-15,-16,-9,-20,-17,-18,-19,-39,-31,-41,-32,]),'RBRACE':([10,11,12,13,14,15,16,27,32,72,78,79,85,90,91,95,97,100,101,103,],[-10,-11,-12,-13,-14,-15,-16,-9,-20,-17,-18,-19,88,93,-39,-31,99,102,-41,-32,]),'LPAREN':([17,19,21,22,23,30,33,34,46,55,56,57,58,62,63,64,65,66,67,68,70,71,],[29,31,33,34,35,46,46,46,46,46,46,46,46,46,-33,-34,-35,-36,-37,-38,46,46,]),'ASSIGN':([18,],[30,]),'SEMICOLON':([20,24,25,28,41,42,43,44,45,52,53,54,60,61,73,74,75,76,77,82,83,88,93,99,102,],[32,36,-8,39,-29,-21,-24,-27,-28,71,-7,72,78,79,-22,-23,-25,-26,-30,-40,86,91,95,101,103,]),'COMMA':([24,25,28,53,],[37,-8,37,-7,]),'DOT':([26,],[38,]),'NUM':([30,33,34,46,55,56,57,58,62,63,64,65,66,67,68,70,71,],[45,45,45,45,45,45,45,45,45,-33,-34,-35,-36,-37,-38,45,45,]),'TEXTO':([31,],[47,]),'RPAREN':([40,41,42,43,44,45,47,48,50,59,73,74,75,76,77,80,82,89,],[54,-29,-21,-24,-27,-28,60,61,69,77,-22,-23,-25,-26,-30,84,-40,92,]),'TIMES':([41,43,44,45,73,74,75,76,77,],[-29,57,-27,-28,57,57,-25,-26,-30,]),'DIVIDE':([41,43,44,45,73,74,75,76,77,],[-29,58,-27,-28,58,58,-25,-26,-30,]),'PLUS':([41,42,43,44,45,49,51,59,73,74,75,76,77,80,82,],[-29,55,-24,-27,-28,55,55,55,-22,-23,-25,-26,-30,55,55,]),'MINUS':([41,42,43,44,45,49,51,59,73,74,75,76,77,80,82,],[-29,56,-24,-27,-28,56,56,56,-22,-23,-25,-26,-30,56,56,]),'LT':([41,43,44,45,49,51,73,74,75,76,77,],[-29,-24,-27,-28,63,63,-22,-23,-25,-26,-30,]),'GT':([41,43,44,45,49,51,73,74,75,76,77,],[-29,-24,-27,-28,64,64,-22,-23,-25,-26,-30,]),'LE':([41,43,44,45,49,51,73,74,75,76,77,],[-29,-24,-27,-28,65,65,-22,-23,-25,-26,-30,]),'GE':([41,43,44,45,49,51,73,74,75,76,77,],[-29,-24,-27,-28,66,66,-22,-23,-25,-26,-30,]),'NE':([41,43,44,45,49,51,73,74,75,76,77,],[-29,-24,-27,-28,67,67,-22,-23,-25,-26,-30,]),'EQ':([41,43,44,45,49,51,73,74,75,76,77,],[-29,-24,-27,-28,68,68,-22,-23,-25,-26,-30,]),'LBRACE':([69,84,92,96,],[81,87,94,98,]),'ELSE':([93,],[96,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'program':([0,],[1,]),'declarations':([2,],[3,]),'declaration':([2,3,],[4,9,]),'statements':([3,79,80,95,96,],[8,85,86,97,98,]),'statement':([3,8,79,80,85,86,95,96,97,98,],[10,26,10,10,26,26,10,10,26,26,]),'assignment':([3,8,30,79,80,85,86,87,95,96,97,98,],[11,11,45,11,11,11,11,90,11,11,11,11,]),'conditional':([3,8,79,80,85,86,95,96,97,98,],[12,12,12,12,12,12,12,12,12,12,]),'loop':([3,8,79,80,85,86,95,96,97,98,],[13,13,13,13,13,13,13,13,13,13,]),'io_operation':([3,8,79,80,85,86,95,96,97,98,],[14,14,14,14,14,14,14,14,14,14,]),'var_list':([5,6,7,],[21,23,24,]),'expression':([27,28,29,42,64,],[38,43,44,61,81,]),'term':([27,28,29,42,51,52,53,54,55,56,57,58,64,],[39,39,39,39,68,69,70,71,72,73,74,75,39,]),'factor':([27,28,29,42,51,52,53,54,55,56,57,58,59,60,64,],[40,40,40,40,40,40,40,40,40,40,40,40,76,77,40,]),'else_statement':([88,],[91,]),'empty':([88,],[93,]),}
+_lr_goto_items = {'Programa':([0,],[1,]),'Declara':([2,],[3,]),'Tipo':([2,3,],[4,9,]),'Bloco':([3,81,87,94,98,],[8,85,90,97,100,]),'Cmd':([3,8,81,85,87,90,94,97,98,100,],[10,27,10,27,10,27,10,27,10,27,]),'CmdLeitura':([3,8,81,85,87,90,94,97,98,100,],[11,11,11,11,11,11,11,11,11,11,]),'CmdEscrita':([3,8,81,85,87,90,94,97,98,100,],[12,12,12,12,12,12,12,12,12,12,]),'CmdExpr':([3,8,81,85,87,90,94,97,98,100,],[13,13,13,13,13,13,13,13,13,13,]),'CmdIf':([3,8,81,85,87,90,94,97,98,100,],[14,14,14,14,14,14,14,14,14,14,]),'WhileStmt':([3,8,81,85,87,90,94,97,98,100,],[15,15,15,15,15,15,15,15,15,15,]),'ForStmt':([3,8,81,85,87,90,94,97,98,100,],[16,16,16,16,16,16,16,16,16,16,]),'AssignStmt':([3,8,35,81,85,86,87,90,94,97,98,100,],[20,20,52,20,20,89,20,20,20,20,20,20,]),'ListaId':([4,9,],[24,28,]),'Expr':([30,33,34,46,62,70,71,],[42,49,51,59,80,82,51,]),'Termo':([30,33,34,46,55,56,62,70,71,],[43,43,43,43,73,74,43,43,43,]),'Fator':([30,33,34,46,55,56,57,58,62,70,71,],[44,44,44,44,44,44,75,76,44,44,44,]),'Cond':([34,71,],[50,83,]),'Op_rel':([49,51,],[62,70,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,44 +26,46 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> program","S'",1,None,None,None),
-  ('program -> INIT declarations statements FIM','program',4,'p_program','sintatico.py',8),
-  ('declarations -> declarations declaration','declarations',2,'p_declarations','sintatico.py',13),
-  ('declarations -> declaration','declarations',1,'p_declarations','sintatico.py',14),
-  ('declaration -> INT var_list SEMICOLON','declaration',3,'p_declaration','sintatico.py',21),
-  ('declaration -> DEC var_list SEMICOLON','declaration',3,'p_declaration','sintatico.py',22),
-  ('declaration -> TEXT var_list SEMICOLON','declaration',3,'p_declaration','sintatico.py',23),
-  ('var_list -> var_list COMMA ID','var_list',3,'p_var_list','sintatico.py',28),
-  ('var_list -> ID','var_list',1,'p_var_list','sintatico.py',29),
-  ('statements -> statements statement','statements',2,'p_statements','sintatico.py',37),
-  ('statements -> statement','statements',1,'p_statements','sintatico.py',38),
-  ('statement -> assignment','statement',1,'p_statement','sintatico.py',46),
-  ('statement -> conditional','statement',1,'p_statement','sintatico.py',47),
-  ('statement -> loop','statement',1,'p_statement','sintatico.py',48),
-  ('statement -> io_operation','statement',1,'p_statement','sintatico.py',49),
-  ('assignment -> ID ASSIGN expression SEMICOLON','assignment',4,'p_assignment','sintatico.py',54),
-  ('expression -> expression PLUS term','expression',3,'p_expression','sintatico.py',59),
-  ('expression -> expression MINUS term','expression',3,'p_expression','sintatico.py',60),
-  ('expression -> expression LT term','expression',3,'p_expression','sintatico.py',61),
-  ('expression -> expression GT term','expression',3,'p_expression','sintatico.py',62),
-  ('expression -> expression LE term','expression',3,'p_expression','sintatico.py',63),
-  ('expression -> expression GE term','expression',3,'p_expression','sintatico.py',64),
-  ('expression -> expression EQ term','expression',3,'p_expression','sintatico.py',65),
-  ('expression -> expression NE term','expression',3,'p_expression','sintatico.py',66),
-  ('expression -> term','expression',1,'p_expression','sintatico.py',67),
-  ('term -> term TIMES factor','term',3,'p_term','sintatico.py',74),
-  ('term -> term DIVIDE factor','term',3,'p_term','sintatico.py',75),
-  ('term -> factor','term',1,'p_term','sintatico.py',76),
-  ('factor -> NUMBER','factor',1,'p_factor','sintatico.py',83),
-  ('factor -> ID','factor',1,'p_factor','sintatico.py',84),
-  ('factor -> LPAREN expression RPAREN','factor',3,'p_factor','sintatico.py',85),
-  ('conditional -> IF LPAREN expression RPAREN LBRACE statements RBRACE else_statement','conditional',8,'p_conditional','sintatico.py',93),
-  ('else_statement -> ELSE LBRACE statements RBRACE','else_statement',4,'p_else_statement','sintatico.py',97),
-  ('else_statement -> empty','else_statement',1,'p_else_statement','sintatico.py',98),
-  ('loop -> WHILE LPAREN expression RPAREN LBRACE statements RBRACE','loop',7,'p_while_loop','sintatico.py',106),
-  ('loop -> FOR LPAREN assignment SEMICOLON expression SEMICOLON assignment RPAREN LBRACE statements RBRACE','loop',11,'p_for_loop','sintatico.py',111),
-  ('io_operation -> ESCREVA LPAREN STRING RPAREN SEMICOLON','io_operation',5,'p_io_operation','sintatico.py',116),
-  ('io_operation -> ESCREVA LPAREN ID RPAREN SEMICOLON','io_operation',5,'p_io_operation','sintatico.py',117),
-  ('empty -> <empty>','empty',0,'p_empty','sintatico.py',122),
-  ('io_operation -> LEIA LPAREN ID RPAREN SEMICOLON','io_operation',5,'p_cmd_leitura','sintatico.py',127),
+  ("S' -> Programa","S'",1,None,None,None),
+  ('Programa -> INIT Declara Bloco FIMPROG DOT','Programa',5,'p_Programa','compiler.py',124),
+  ('Declara -> Declara Tipo ListaId SEMICOLON','Declara',4,'p_Declara','compiler.py',129),
+  ('Declara -> Tipo ListaId SEMICOLON','Declara',3,'p_Declara','compiler.py',130),
+  ('Tipo -> INT','Tipo',1,'p_Tipo','compiler.py',150),
+  ('Tipo -> DEC','Tipo',1,'p_Tipo','compiler.py',151),
+  ('Tipo -> TEXT','Tipo',1,'p_Tipo','compiler.py',152),
+  ('ListaId -> ListaId COMMA ID','ListaId',3,'p_ListaId','compiler.py',156),
+  ('ListaId -> ID','ListaId',1,'p_ListaId','compiler.py',157),
+  ('Bloco -> Bloco Cmd','Bloco',2,'p_Bloco','compiler.py',165),
+  ('Bloco -> Cmd','Bloco',1,'p_Bloco','compiler.py',166),
+  ('Cmd -> CmdLeitura','Cmd',1,'p_Cmd','compiler.py',171),
+  ('Cmd -> CmdEscrita','Cmd',1,'p_Cmd','compiler.py',172),
+  ('Cmd -> CmdExpr','Cmd',1,'p_Cmd','compiler.py',173),
+  ('Cmd -> CmdIf','Cmd',1,'p_Cmd','compiler.py',174),
+  ('Cmd -> WhileStmt','Cmd',1,'p_Cmd','compiler.py',175),
+  ('Cmd -> ForStmt','Cmd',1,'p_Cmd','compiler.py',176),
+  ('CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON','CmdLeitura',5,'p_CmdLeitura','compiler.py',181),
+  ('CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON','CmdEscrita',5,'p_CmdEscrita','compiler.py',196),
+  ('CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON','CmdEscrita',5,'p_CmdEscrita','compiler.py',197),
+  ('CmdExpr -> AssignStmt SEMICOLON','CmdExpr',2,'p_CmdExpr','compiler.py',209),
+  ('AssignStmt -> ID ASSIGN Expr','AssignStmt',3,'p_AssignStmt','compiler.py',214),
+  ('Expr -> Expr PLUS Termo','Expr',3,'p_Expr_plus','compiler.py',224),
+  ('Expr -> Expr MINUS Termo','Expr',3,'p_Expr_minus','compiler.py',228),
+  ('Expr -> Termo','Expr',1,'p_Expr_term','compiler.py',232),
+  ('Termo -> Termo TIMES Fator','Termo',3,'p_Termo_times','compiler.py',237),
+  ('Termo -> Termo DIVIDE Fator','Termo',3,'p_Termo_divide','compiler.py',241),
+  ('Termo -> Fator','Termo',1,'p_Termo_fator','compiler.py',245),
+  ('Fator -> NUM','Fator',1,'p_Fator_num','compiler.py',250),
+  ('Fator -> ID','Fator',1,'p_Fator_id','compiler.py',254),
+  ('Fator -> LPAREN Expr RPAREN','Fator',3,'p_Fator_expr','compiler.py',262),
+  ('CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON','CmdIf',10,'p_CmdIf','compiler.py',267),
+  ('CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON','CmdIf',14,'p_CmdIf','compiler.py',268),
+  ('Op_rel -> LT','Op_rel',1,'p_Op_rel','compiler.py',290),
+  ('Op_rel -> GT','Op_rel',1,'p_Op_rel','compiler.py',291),
+  ('Op_rel -> LE','Op_rel',1,'p_Op_rel','compiler.py',292),
+  ('Op_rel -> GE','Op_rel',1,'p_Op_rel','compiler.py',293),
+  ('Op_rel -> NE','Op_rel',1,'p_Op_rel','compiler.py',294),
+  ('Op_rel -> EQ','Op_rel',1,'p_Op_rel','compiler.py',295),
+  ('WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON','WhileStmt',8,'p_WhileStmt','compiler.py',300),
+  ('Cond -> Expr Op_rel Expr','Cond',3,'p_Cond','compiler.py',308),
+  ('ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON','ForStmt',12,'p_ForStmt','compiler.py',313),
 ]

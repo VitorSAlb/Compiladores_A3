@@ -1,104 +1,1614 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
-Unused terminals:
-
-    DIVIDE
-    TIMES
-
 Grammar
 
-Rule 0     S' -> program
-Rule 1     program -> INIT declarations statements FIM
-Rule 2     declarations -> declarations declaration
-Rule 3     declarations -> declaration
-Rule 4     declaration -> INT var_list SEMICOLON
-Rule 5     declaration -> DEC var_list SEMICOLON
-Rule 6     declaration -> TEXT var_list SEMICOLON
-Rule 7     var_list -> var_list COMMA ID
-Rule 8     var_list -> ID
-Rule 9     statements -> statements statement
-Rule 10    statements -> statement
-Rule 11    statement -> assignment
-Rule 12    statement -> conditional
-Rule 13    statement -> loop
-Rule 14    statement -> io_operation
-Rule 15    assignment -> ID ASSIGN expression SEMICOLON
-Rule 16    expression -> expression PLUS term
-Rule 17    expression -> expression MINUS term
-Rule 18    expression -> expression LT term
-Rule 19    expression -> expression GT term
-Rule 20    expression -> expression LE term
-Rule 21    expression -> expression GE term
-Rule 22    expression -> expression EQ term
-Rule 23    expression -> expression NE term
-Rule 24    expression -> term
-Rule 25    term -> ID
-Rule 26    term -> NUM
-Rule 27    term -> LPAREN expression RPAREN
-Rule 28    factor -> NUMBER
-Rule 29    factor -> ID
-Rule 30    factor -> LPAREN expression RPAREN
-Rule 31    conditional -> IF LPAREN expression RPAREN LBRACE statements RBRACE else_statement
-Rule 32    else_statement -> ELSE LBRACE statements RBRACE
-Rule 33    else_statement -> empty
-Rule 34    loop -> WHILE LPAREN expression RPAREN LBRACE statements RBRACE
-Rule 35    loop -> FOR LPAREN assignment SEMICOLON expression SEMICOLON assignment RPAREN LBRACE statements RBRACE
-Rule 36    io_operation -> ESCREVA LPAREN STRING RPAREN SEMICOLON
-Rule 37    io_operation -> ESCREVA LPAREN ID RPAREN SEMICOLON
-Rule 38    empty -> <empty>
-Rule 39    io_operation -> LEIA LPAREN ID RPAREN SEMICOLON
+Rule 0     S' -> Programa
+Rule 1     Programa -> INIT Declara Bloco FIMPROG DOT
+Rule 2     Declara -> Declara Tipo ListaId SEMICOLON
+Rule 3     Declara -> Tipo ListaId SEMICOLON
+Rule 4     Tipo -> INT
+Rule 5     Tipo -> DEC
+Rule 6     Tipo -> TEXT
+Rule 7     ListaId -> ListaId COMMA ID
+Rule 8     ListaId -> ID
+Rule 9     Bloco -> Bloco Cmd
+Rule 10    Bloco -> Cmd
+Rule 11    Cmd -> CmdLeitura
+Rule 12    Cmd -> CmdEscrita
+Rule 13    Cmd -> CmdExpr
+Rule 14    Cmd -> CmdIf
+Rule 15    Cmd -> WhileStmt
+Rule 16    Cmd -> ForStmt
+Rule 17    CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON
+Rule 18    CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+Rule 19    CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON
+Rule 20    CmdExpr -> AssignStmt SEMICOLON
+Rule 21    AssignStmt -> ID ASSIGN Expr
+Rule 22    Expr -> Expr PLUS Termo
+Rule 23    Expr -> Expr MINUS Termo
+Rule 24    Expr -> Termo
+Rule 25    Termo -> Termo TIMES Fator
+Rule 26    Termo -> Termo DIVIDE Fator
+Rule 27    Termo -> Fator
+Rule 28    Fator -> NUM
+Rule 29    Fator -> ID
+Rule 30    Fator -> LPAREN Expr RPAREN
+Rule 31    CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+Rule 32    CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+Rule 33    Op_rel -> LT
+Rule 34    Op_rel -> GT
+Rule 35    Op_rel -> LE
+Rule 36    Op_rel -> GE
+Rule 37    Op_rel -> NE
+Rule 38    Op_rel -> EQ
+Rule 39    WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+Rule 40    Cond -> Expr Op_rel Expr
+Rule 41    ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
 
 Terminals, with rules where they appear
 
-ASSIGN               : 15
+ASSIGN               : 21
 COMMA                : 7
 DEC                  : 5
-DIVIDE               : 
+DIVIDE               : 26
+DOT                  : 1
 ELSE                 : 32
-EQ                   : 22
-ESCREVA              : 36 37
-FIM                  : 1
-FOR                  : 35
-GE                   : 21
-GT                   : 19
-ID                   : 7 8 15 25 29 37 39
-IF                   : 31
+EQ                   : 38
+ESCREVA              : 18 19
+FIMPROG              : 1
+FOR                  : 41
+GE                   : 36
+GT                   : 34
+ID                   : 7 8 17 19 21 29
+IF                   : 31 32
 INIT                 : 1
 INT                  : 4
-LBRACE               : 31 32 34 35
-LE                   : 20
-LEIA                 : 39
-LPAREN               : 27 30 31 34 35 36 37 39
-LT                   : 18
-MINUS                : 17
-NE                   : 23
-NUMBER               : 28
-PLUS                 : 16
-RBRACE               : 31 32 34 35
-RPAREN               : 27 30 31 34 35 36 37 39
-SEMICOLON            : 4 5 6 15 35 35 36 37 39
-STRING               : 36
+LBRACE               : 31 32 32 39 41
+LE                   : 35
+LEIA                 : 17
+LPAREN               : 17 18 19 30 31 32 39 41
+LT                   : 33
+MINUS                : 23
+NE                   : 37
+NUM                  : 28
+PLUS                 : 22
+RBRACE               : 31 32 32 39 41
+RPAREN               : 17 18 19 30 31 32 39 41
+SEMICOLON            : 2 3 17 18 19 20 31 32 39 41 41 41
 TEXT                 : 6
-TIMES                : 
-WHILE                : 34
+TEXTO                : 18
+TIMES                : 25
+WHILE                : 39
 error                : 
 
 Nonterminals, with rules where they appear
 
-NUM                  : 26
-assignment           : 11 35 35
-conditional          : 12
-declaration          : 2 3
-declarations         : 1 2
-else_statement       : 31
-empty                : 33
-expression           : 15 16 17 18 19 20 21 22 23 27 30 31 34 35
-factor               : 
-io_operation         : 14
-loop                 : 13
-program              : 0
-statement            : 9 10
-statements           : 1 9 31 32 34 35
-term                 : 16 17 18 19 20 21 22 23 24
-var_list             : 4 5 6 7
+AssignStmt           : 20 41 41
+Bloco                : 1 9 31 32 32 39 41
+Cmd                  : 9 10
+CmdEscrita           : 12
+CmdExpr              : 13
+CmdIf                : 14
+CmdLeitura           : 11
+Cond                 : 39 41
+Declara              : 1 2
+Expr                 : 21 22 23 30 31 31 32 32 40 40
+Fator                : 25 26 27
+ForStmt              : 16
+ListaId              : 2 3 7
+Op_rel               : 31 32 40
+Programa             : 0
+Termo                : 22 23 24 25 26
+Tipo                 : 2 3
+WhileStmt            : 15
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . Programa
+    (1) Programa -> . INIT Declara Bloco FIMPROG DOT
+
+    INIT            shift and go to state 2
+
+    Programa                       shift and go to state 1
+
+state 1
+
+    (0) S' -> Programa .
+
+
+
+state 2
+
+    (1) Programa -> INIT . Declara Bloco FIMPROG DOT
+    (2) Declara -> . Declara Tipo ListaId SEMICOLON
+    (3) Declara -> . Tipo ListaId SEMICOLON
+    (4) Tipo -> . INT
+    (5) Tipo -> . DEC
+    (6) Tipo -> . TEXT
+
+    INT             shift and go to state 5
+    DEC             shift and go to state 6
+    TEXT            shift and go to state 7
+
+    Declara                        shift and go to state 3
+    Tipo                           shift and go to state 4
+
+state 3
+
+    (1) Programa -> INIT Declara . Bloco FIMPROG DOT
+    (2) Declara -> Declara . Tipo ListaId SEMICOLON
+    (9) Bloco -> . Bloco Cmd
+    (10) Bloco -> . Cmd
+    (4) Tipo -> . INT
+    (5) Tipo -> . DEC
+    (6) Tipo -> . TEXT
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    INT             shift and go to state 5
+    DEC             shift and go to state 6
+    TEXT            shift and go to state 7
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    Bloco                          shift and go to state 8
+    Tipo                           shift and go to state 9
+    Cmd                            shift and go to state 10
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+    AssignStmt                     shift and go to state 20
+
+state 4
+
+    (3) Declara -> Tipo . ListaId SEMICOLON
+    (7) ListaId -> . ListaId COMMA ID
+    (8) ListaId -> . ID
+
+    ID              shift and go to state 25
+
+    ListaId                        shift and go to state 24
+
+state 5
+
+    (4) Tipo -> INT .
+
+    ID              reduce using rule 4 (Tipo -> INT .)
+
+
+state 6
+
+    (5) Tipo -> DEC .
+
+    ID              reduce using rule 5 (Tipo -> DEC .)
+
+
+state 7
+
+    (6) Tipo -> TEXT .
+
+    ID              reduce using rule 6 (Tipo -> TEXT .)
+
+
+state 8
+
+    (1) Programa -> INIT Declara Bloco . FIMPROG DOT
+    (9) Bloco -> Bloco . Cmd
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    FIMPROG         shift and go to state 26
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    Cmd                            shift and go to state 27
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+    AssignStmt                     shift and go to state 20
+
+state 9
+
+    (2) Declara -> Declara Tipo . ListaId SEMICOLON
+    (7) ListaId -> . ListaId COMMA ID
+    (8) ListaId -> . ID
+
+    ID              shift and go to state 25
+
+    ListaId                        shift and go to state 28
+
+state 10
+
+    (10) Bloco -> Cmd .
+
+    FIMPROG         reduce using rule 10 (Bloco -> Cmd .)
+    LEIA            reduce using rule 10 (Bloco -> Cmd .)
+    ESCREVA         reduce using rule 10 (Bloco -> Cmd .)
+    IF              reduce using rule 10 (Bloco -> Cmd .)
+    WHILE           reduce using rule 10 (Bloco -> Cmd .)
+    FOR             reduce using rule 10 (Bloco -> Cmd .)
+    ID              reduce using rule 10 (Bloco -> Cmd .)
+    RBRACE          reduce using rule 10 (Bloco -> Cmd .)
+
+
+state 11
+
+    (11) Cmd -> CmdLeitura .
+
+    FIMPROG         reduce using rule 11 (Cmd -> CmdLeitura .)
+    LEIA            reduce using rule 11 (Cmd -> CmdLeitura .)
+    ESCREVA         reduce using rule 11 (Cmd -> CmdLeitura .)
+    IF              reduce using rule 11 (Cmd -> CmdLeitura .)
+    WHILE           reduce using rule 11 (Cmd -> CmdLeitura .)
+    FOR             reduce using rule 11 (Cmd -> CmdLeitura .)
+    ID              reduce using rule 11 (Cmd -> CmdLeitura .)
+    RBRACE          reduce using rule 11 (Cmd -> CmdLeitura .)
+
+
+state 12
+
+    (12) Cmd -> CmdEscrita .
+
+    FIMPROG         reduce using rule 12 (Cmd -> CmdEscrita .)
+    LEIA            reduce using rule 12 (Cmd -> CmdEscrita .)
+    ESCREVA         reduce using rule 12 (Cmd -> CmdEscrita .)
+    IF              reduce using rule 12 (Cmd -> CmdEscrita .)
+    WHILE           reduce using rule 12 (Cmd -> CmdEscrita .)
+    FOR             reduce using rule 12 (Cmd -> CmdEscrita .)
+    ID              reduce using rule 12 (Cmd -> CmdEscrita .)
+    RBRACE          reduce using rule 12 (Cmd -> CmdEscrita .)
+
+
+state 13
+
+    (13) Cmd -> CmdExpr .
+
+    FIMPROG         reduce using rule 13 (Cmd -> CmdExpr .)
+    LEIA            reduce using rule 13 (Cmd -> CmdExpr .)
+    ESCREVA         reduce using rule 13 (Cmd -> CmdExpr .)
+    IF              reduce using rule 13 (Cmd -> CmdExpr .)
+    WHILE           reduce using rule 13 (Cmd -> CmdExpr .)
+    FOR             reduce using rule 13 (Cmd -> CmdExpr .)
+    ID              reduce using rule 13 (Cmd -> CmdExpr .)
+    RBRACE          reduce using rule 13 (Cmd -> CmdExpr .)
+
+
+state 14
+
+    (14) Cmd -> CmdIf .
+
+    FIMPROG         reduce using rule 14 (Cmd -> CmdIf .)
+    LEIA            reduce using rule 14 (Cmd -> CmdIf .)
+    ESCREVA         reduce using rule 14 (Cmd -> CmdIf .)
+    IF              reduce using rule 14 (Cmd -> CmdIf .)
+    WHILE           reduce using rule 14 (Cmd -> CmdIf .)
+    FOR             reduce using rule 14 (Cmd -> CmdIf .)
+    ID              reduce using rule 14 (Cmd -> CmdIf .)
+    RBRACE          reduce using rule 14 (Cmd -> CmdIf .)
+
+
+state 15
+
+    (15) Cmd -> WhileStmt .
+
+    FIMPROG         reduce using rule 15 (Cmd -> WhileStmt .)
+    LEIA            reduce using rule 15 (Cmd -> WhileStmt .)
+    ESCREVA         reduce using rule 15 (Cmd -> WhileStmt .)
+    IF              reduce using rule 15 (Cmd -> WhileStmt .)
+    WHILE           reduce using rule 15 (Cmd -> WhileStmt .)
+    FOR             reduce using rule 15 (Cmd -> WhileStmt .)
+    ID              reduce using rule 15 (Cmd -> WhileStmt .)
+    RBRACE          reduce using rule 15 (Cmd -> WhileStmt .)
+
+
+state 16
+
+    (16) Cmd -> ForStmt .
+
+    FIMPROG         reduce using rule 16 (Cmd -> ForStmt .)
+    LEIA            reduce using rule 16 (Cmd -> ForStmt .)
+    ESCREVA         reduce using rule 16 (Cmd -> ForStmt .)
+    IF              reduce using rule 16 (Cmd -> ForStmt .)
+    WHILE           reduce using rule 16 (Cmd -> ForStmt .)
+    FOR             reduce using rule 16 (Cmd -> ForStmt .)
+    ID              reduce using rule 16 (Cmd -> ForStmt .)
+    RBRACE          reduce using rule 16 (Cmd -> ForStmt .)
+
+
+state 17
+
+    (17) CmdLeitura -> LEIA . LPAREN ID RPAREN SEMICOLON
+
+    LPAREN          shift and go to state 29
+
+
+state 18
+
+    (21) AssignStmt -> ID . ASSIGN Expr
+
+    ASSIGN          shift and go to state 30
+
+
+state 19
+
+    (18) CmdEscrita -> ESCREVA . LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> ESCREVA . LPAREN ID RPAREN SEMICOLON
+
+    LPAREN          shift and go to state 31
+
+
+state 20
+
+    (20) CmdExpr -> AssignStmt . SEMICOLON
+
+    SEMICOLON       shift and go to state 32
+
+
+state 21
+
+    (31) CmdIf -> IF . LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> IF . LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+
+    LPAREN          shift and go to state 33
+
+
+state 22
+
+    (39) WhileStmt -> WHILE . LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+
+    LPAREN          shift and go to state 34
+
+
+state 23
+
+    (41) ForStmt -> FOR . LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+
+    LPAREN          shift and go to state 35
+
+
+state 24
+
+    (3) Declara -> Tipo ListaId . SEMICOLON
+    (7) ListaId -> ListaId . COMMA ID
+
+    SEMICOLON       shift and go to state 36
+    COMMA           shift and go to state 37
+
+
+state 25
+
+    (8) ListaId -> ID .
+
+    SEMICOLON       reduce using rule 8 (ListaId -> ID .)
+    COMMA           reduce using rule 8 (ListaId -> ID .)
+
+
+state 26
+
+    (1) Programa -> INIT Declara Bloco FIMPROG . DOT
+
+    DOT             shift and go to state 38
+
+
+state 27
+
+    (9) Bloco -> Bloco Cmd .
+
+    FIMPROG         reduce using rule 9 (Bloco -> Bloco Cmd .)
+    LEIA            reduce using rule 9 (Bloco -> Bloco Cmd .)
+    ESCREVA         reduce using rule 9 (Bloco -> Bloco Cmd .)
+    IF              reduce using rule 9 (Bloco -> Bloco Cmd .)
+    WHILE           reduce using rule 9 (Bloco -> Bloco Cmd .)
+    FOR             reduce using rule 9 (Bloco -> Bloco Cmd .)
+    ID              reduce using rule 9 (Bloco -> Bloco Cmd .)
+    RBRACE          reduce using rule 9 (Bloco -> Bloco Cmd .)
+
+
+state 28
+
+    (2) Declara -> Declara Tipo ListaId . SEMICOLON
+    (7) ListaId -> ListaId . COMMA ID
+
+    SEMICOLON       shift and go to state 39
+    COMMA           shift and go to state 37
+
+
+state 29
+
+    (17) CmdLeitura -> LEIA LPAREN . ID RPAREN SEMICOLON
+
+    ID              shift and go to state 40
+
+
+state 30
+
+    (21) AssignStmt -> ID ASSIGN . Expr
+    (22) Expr -> . Expr PLUS Termo
+    (23) Expr -> . Expr MINUS Termo
+    (24) Expr -> . Termo
+    (25) Termo -> . Termo TIMES Fator
+    (26) Termo -> . Termo DIVIDE Fator
+    (27) Termo -> . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Expr                           shift and go to state 42
+    Termo                          shift and go to state 43
+    Fator                          shift and go to state 44
+
+state 31
+
+    (18) CmdEscrita -> ESCREVA LPAREN . TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> ESCREVA LPAREN . ID RPAREN SEMICOLON
+
+    TEXTO           shift and go to state 47
+    ID              shift and go to state 48
+
+
+state 32
+
+    (20) CmdExpr -> AssignStmt SEMICOLON .
+
+    FIMPROG         reduce using rule 20 (CmdExpr -> AssignStmt SEMICOLON .)
+    LEIA            reduce using rule 20 (CmdExpr -> AssignStmt SEMICOLON .)
+    ESCREVA         reduce using rule 20 (CmdExpr -> AssignStmt SEMICOLON .)
+    IF              reduce using rule 20 (CmdExpr -> AssignStmt SEMICOLON .)
+    WHILE           reduce using rule 20 (CmdExpr -> AssignStmt SEMICOLON .)
+    FOR             reduce using rule 20 (CmdExpr -> AssignStmt SEMICOLON .)
+    ID              reduce using rule 20 (CmdExpr -> AssignStmt SEMICOLON .)
+    RBRACE          reduce using rule 20 (CmdExpr -> AssignStmt SEMICOLON .)
+
+
+state 33
+
+    (31) CmdIf -> IF LPAREN . Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> IF LPAREN . Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (22) Expr -> . Expr PLUS Termo
+    (23) Expr -> . Expr MINUS Termo
+    (24) Expr -> . Termo
+    (25) Termo -> . Termo TIMES Fator
+    (26) Termo -> . Termo DIVIDE Fator
+    (27) Termo -> . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Expr                           shift and go to state 49
+    Termo                          shift and go to state 43
+    Fator                          shift and go to state 44
+
+state 34
+
+    (39) WhileStmt -> WHILE LPAREN . Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (40) Cond -> . Expr Op_rel Expr
+    (22) Expr -> . Expr PLUS Termo
+    (23) Expr -> . Expr MINUS Termo
+    (24) Expr -> . Termo
+    (25) Termo -> . Termo TIMES Fator
+    (26) Termo -> . Termo DIVIDE Fator
+    (27) Termo -> . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Cond                           shift and go to state 50
+    Expr                           shift and go to state 51
+    Termo                          shift and go to state 43
+    Fator                          shift and go to state 44
+
+state 35
+
+    (41) ForStmt -> FOR LPAREN . AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    ID              shift and go to state 18
+
+    AssignStmt                     shift and go to state 52
+
+state 36
+
+    (3) Declara -> Tipo ListaId SEMICOLON .
+
+    INT             reduce using rule 3 (Declara -> Tipo ListaId SEMICOLON .)
+    DEC             reduce using rule 3 (Declara -> Tipo ListaId SEMICOLON .)
+    TEXT            reduce using rule 3 (Declara -> Tipo ListaId SEMICOLON .)
+    LEIA            reduce using rule 3 (Declara -> Tipo ListaId SEMICOLON .)
+    ESCREVA         reduce using rule 3 (Declara -> Tipo ListaId SEMICOLON .)
+    IF              reduce using rule 3 (Declara -> Tipo ListaId SEMICOLON .)
+    WHILE           reduce using rule 3 (Declara -> Tipo ListaId SEMICOLON .)
+    FOR             reduce using rule 3 (Declara -> Tipo ListaId SEMICOLON .)
+    ID              reduce using rule 3 (Declara -> Tipo ListaId SEMICOLON .)
+
+
+state 37
+
+    (7) ListaId -> ListaId COMMA . ID
+
+    ID              shift and go to state 53
+
+
+state 38
+
+    (1) Programa -> INIT Declara Bloco FIMPROG DOT .
+
+    $end            reduce using rule 1 (Programa -> INIT Declara Bloco FIMPROG DOT .)
+
+
+state 39
+
+    (2) Declara -> Declara Tipo ListaId SEMICOLON .
+
+    INT             reduce using rule 2 (Declara -> Declara Tipo ListaId SEMICOLON .)
+    DEC             reduce using rule 2 (Declara -> Declara Tipo ListaId SEMICOLON .)
+    TEXT            reduce using rule 2 (Declara -> Declara Tipo ListaId SEMICOLON .)
+    LEIA            reduce using rule 2 (Declara -> Declara Tipo ListaId SEMICOLON .)
+    ESCREVA         reduce using rule 2 (Declara -> Declara Tipo ListaId SEMICOLON .)
+    IF              reduce using rule 2 (Declara -> Declara Tipo ListaId SEMICOLON .)
+    WHILE           reduce using rule 2 (Declara -> Declara Tipo ListaId SEMICOLON .)
+    FOR             reduce using rule 2 (Declara -> Declara Tipo ListaId SEMICOLON .)
+    ID              reduce using rule 2 (Declara -> Declara Tipo ListaId SEMICOLON .)
+
+
+state 40
+
+    (17) CmdLeitura -> LEIA LPAREN ID . RPAREN SEMICOLON
+
+    RPAREN          shift and go to state 54
+
+
+state 41
+
+    (29) Fator -> ID .
+
+    TIMES           reduce using rule 29 (Fator -> ID .)
+    DIVIDE          reduce using rule 29 (Fator -> ID .)
+    PLUS            reduce using rule 29 (Fator -> ID .)
+    MINUS           reduce using rule 29 (Fator -> ID .)
+    SEMICOLON       reduce using rule 29 (Fator -> ID .)
+    RPAREN          reduce using rule 29 (Fator -> ID .)
+    LT              reduce using rule 29 (Fator -> ID .)
+    GT              reduce using rule 29 (Fator -> ID .)
+    LE              reduce using rule 29 (Fator -> ID .)
+    GE              reduce using rule 29 (Fator -> ID .)
+    NE              reduce using rule 29 (Fator -> ID .)
+    EQ              reduce using rule 29 (Fator -> ID .)
+
+
+state 42
+
+    (21) AssignStmt -> ID ASSIGN Expr .
+    (22) Expr -> Expr . PLUS Termo
+    (23) Expr -> Expr . MINUS Termo
+
+    SEMICOLON       reduce using rule 21 (AssignStmt -> ID ASSIGN Expr .)
+    RPAREN          reduce using rule 21 (AssignStmt -> ID ASSIGN Expr .)
+    PLUS            shift and go to state 55
+    MINUS           shift and go to state 56
+
+
+state 43
+
+    (24) Expr -> Termo .
+    (25) Termo -> Termo . TIMES Fator
+    (26) Termo -> Termo . DIVIDE Fator
+
+    PLUS            reduce using rule 24 (Expr -> Termo .)
+    MINUS           reduce using rule 24 (Expr -> Termo .)
+    SEMICOLON       reduce using rule 24 (Expr -> Termo .)
+    RPAREN          reduce using rule 24 (Expr -> Termo .)
+    LT              reduce using rule 24 (Expr -> Termo .)
+    GT              reduce using rule 24 (Expr -> Termo .)
+    LE              reduce using rule 24 (Expr -> Termo .)
+    GE              reduce using rule 24 (Expr -> Termo .)
+    NE              reduce using rule 24 (Expr -> Termo .)
+    EQ              reduce using rule 24 (Expr -> Termo .)
+    TIMES           shift and go to state 57
+    DIVIDE          shift and go to state 58
+
+
+state 44
+
+    (27) Termo -> Fator .
+
+    TIMES           reduce using rule 27 (Termo -> Fator .)
+    DIVIDE          reduce using rule 27 (Termo -> Fator .)
+    PLUS            reduce using rule 27 (Termo -> Fator .)
+    MINUS           reduce using rule 27 (Termo -> Fator .)
+    SEMICOLON       reduce using rule 27 (Termo -> Fator .)
+    RPAREN          reduce using rule 27 (Termo -> Fator .)
+    LT              reduce using rule 27 (Termo -> Fator .)
+    GT              reduce using rule 27 (Termo -> Fator .)
+    LE              reduce using rule 27 (Termo -> Fator .)
+    GE              reduce using rule 27 (Termo -> Fator .)
+    NE              reduce using rule 27 (Termo -> Fator .)
+    EQ              reduce using rule 27 (Termo -> Fator .)
+
+
+state 45
+
+    (28) Fator -> NUM .
+
+    TIMES           reduce using rule 28 (Fator -> NUM .)
+    DIVIDE          reduce using rule 28 (Fator -> NUM .)
+    PLUS            reduce using rule 28 (Fator -> NUM .)
+    MINUS           reduce using rule 28 (Fator -> NUM .)
+    SEMICOLON       reduce using rule 28 (Fator -> NUM .)
+    RPAREN          reduce using rule 28 (Fator -> NUM .)
+    LT              reduce using rule 28 (Fator -> NUM .)
+    GT              reduce using rule 28 (Fator -> NUM .)
+    LE              reduce using rule 28 (Fator -> NUM .)
+    GE              reduce using rule 28 (Fator -> NUM .)
+    NE              reduce using rule 28 (Fator -> NUM .)
+    EQ              reduce using rule 28 (Fator -> NUM .)
+
+
+state 46
+
+    (30) Fator -> LPAREN . Expr RPAREN
+    (22) Expr -> . Expr PLUS Termo
+    (23) Expr -> . Expr MINUS Termo
+    (24) Expr -> . Termo
+    (25) Termo -> . Termo TIMES Fator
+    (26) Termo -> . Termo DIVIDE Fator
+    (27) Termo -> . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Expr                           shift and go to state 59
+    Termo                          shift and go to state 43
+    Fator                          shift and go to state 44
+
+state 47
+
+    (18) CmdEscrita -> ESCREVA LPAREN TEXTO . RPAREN SEMICOLON
+
+    RPAREN          shift and go to state 60
+
+
+state 48
+
+    (19) CmdEscrita -> ESCREVA LPAREN ID . RPAREN SEMICOLON
+
+    RPAREN          shift and go to state 61
+
+
+state 49
+
+    (31) CmdIf -> IF LPAREN Expr . Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> IF LPAREN Expr . Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (22) Expr -> Expr . PLUS Termo
+    (23) Expr -> Expr . MINUS Termo
+    (33) Op_rel -> . LT
+    (34) Op_rel -> . GT
+    (35) Op_rel -> . LE
+    (36) Op_rel -> . GE
+    (37) Op_rel -> . NE
+    (38) Op_rel -> . EQ
+
+    PLUS            shift and go to state 55
+    MINUS           shift and go to state 56
+    LT              shift and go to state 63
+    GT              shift and go to state 64
+    LE              shift and go to state 65
+    GE              shift and go to state 66
+    NE              shift and go to state 67
+    EQ              shift and go to state 68
+
+    Op_rel                         shift and go to state 62
+
+state 50
+
+    (39) WhileStmt -> WHILE LPAREN Cond . RPAREN LBRACE Bloco RBRACE SEMICOLON
+
+    RPAREN          shift and go to state 69
+
+
+state 51
+
+    (40) Cond -> Expr . Op_rel Expr
+    (22) Expr -> Expr . PLUS Termo
+    (23) Expr -> Expr . MINUS Termo
+    (33) Op_rel -> . LT
+    (34) Op_rel -> . GT
+    (35) Op_rel -> . LE
+    (36) Op_rel -> . GE
+    (37) Op_rel -> . NE
+    (38) Op_rel -> . EQ
+
+    PLUS            shift and go to state 55
+    MINUS           shift and go to state 56
+    LT              shift and go to state 63
+    GT              shift and go to state 64
+    LE              shift and go to state 65
+    GE              shift and go to state 66
+    NE              shift and go to state 67
+    EQ              shift and go to state 68
+
+    Op_rel                         shift and go to state 70
+
+state 52
+
+    (41) ForStmt -> FOR LPAREN AssignStmt . SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+
+    SEMICOLON       shift and go to state 71
+
+
+state 53
+
+    (7) ListaId -> ListaId COMMA ID .
+
+    SEMICOLON       reduce using rule 7 (ListaId -> ListaId COMMA ID .)
+    COMMA           reduce using rule 7 (ListaId -> ListaId COMMA ID .)
+
+
+state 54
+
+    (17) CmdLeitura -> LEIA LPAREN ID RPAREN . SEMICOLON
+
+    SEMICOLON       shift and go to state 72
+
+
+state 55
+
+    (22) Expr -> Expr PLUS . Termo
+    (25) Termo -> . Termo TIMES Fator
+    (26) Termo -> . Termo DIVIDE Fator
+    (27) Termo -> . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Termo                          shift and go to state 73
+    Fator                          shift and go to state 44
+
+state 56
+
+    (23) Expr -> Expr MINUS . Termo
+    (25) Termo -> . Termo TIMES Fator
+    (26) Termo -> . Termo DIVIDE Fator
+    (27) Termo -> . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Termo                          shift and go to state 74
+    Fator                          shift and go to state 44
+
+state 57
+
+    (25) Termo -> Termo TIMES . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Fator                          shift and go to state 75
+
+state 58
+
+    (26) Termo -> Termo DIVIDE . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Fator                          shift and go to state 76
+
+state 59
+
+    (30) Fator -> LPAREN Expr . RPAREN
+    (22) Expr -> Expr . PLUS Termo
+    (23) Expr -> Expr . MINUS Termo
+
+    RPAREN          shift and go to state 77
+    PLUS            shift and go to state 55
+    MINUS           shift and go to state 56
+
+
+state 60
+
+    (18) CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN . SEMICOLON
+
+    SEMICOLON       shift and go to state 78
+
+
+state 61
+
+    (19) CmdEscrita -> ESCREVA LPAREN ID RPAREN . SEMICOLON
+
+    SEMICOLON       shift and go to state 79
+
+
+state 62
+
+    (31) CmdIf -> IF LPAREN Expr Op_rel . Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> IF LPAREN Expr Op_rel . Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (22) Expr -> . Expr PLUS Termo
+    (23) Expr -> . Expr MINUS Termo
+    (24) Expr -> . Termo
+    (25) Termo -> . Termo TIMES Fator
+    (26) Termo -> . Termo DIVIDE Fator
+    (27) Termo -> . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Expr                           shift and go to state 80
+    Termo                          shift and go to state 43
+    Fator                          shift and go to state 44
+
+state 63
+
+    (33) Op_rel -> LT .
+
+    NUM             reduce using rule 33 (Op_rel -> LT .)
+    ID              reduce using rule 33 (Op_rel -> LT .)
+    LPAREN          reduce using rule 33 (Op_rel -> LT .)
+
+
+state 64
+
+    (34) Op_rel -> GT .
+
+    NUM             reduce using rule 34 (Op_rel -> GT .)
+    ID              reduce using rule 34 (Op_rel -> GT .)
+    LPAREN          reduce using rule 34 (Op_rel -> GT .)
+
+
+state 65
+
+    (35) Op_rel -> LE .
+
+    NUM             reduce using rule 35 (Op_rel -> LE .)
+    ID              reduce using rule 35 (Op_rel -> LE .)
+    LPAREN          reduce using rule 35 (Op_rel -> LE .)
+
+
+state 66
+
+    (36) Op_rel -> GE .
+
+    NUM             reduce using rule 36 (Op_rel -> GE .)
+    ID              reduce using rule 36 (Op_rel -> GE .)
+    LPAREN          reduce using rule 36 (Op_rel -> GE .)
+
+
+state 67
+
+    (37) Op_rel -> NE .
+
+    NUM             reduce using rule 37 (Op_rel -> NE .)
+    ID              reduce using rule 37 (Op_rel -> NE .)
+    LPAREN          reduce using rule 37 (Op_rel -> NE .)
+
+
+state 68
+
+    (38) Op_rel -> EQ .
+
+    NUM             reduce using rule 38 (Op_rel -> EQ .)
+    ID              reduce using rule 38 (Op_rel -> EQ .)
+    LPAREN          reduce using rule 38 (Op_rel -> EQ .)
+
+
+state 69
+
+    (39) WhileStmt -> WHILE LPAREN Cond RPAREN . LBRACE Bloco RBRACE SEMICOLON
+
+    LBRACE          shift and go to state 81
+
+
+state 70
+
+    (40) Cond -> Expr Op_rel . Expr
+    (22) Expr -> . Expr PLUS Termo
+    (23) Expr -> . Expr MINUS Termo
+    (24) Expr -> . Termo
+    (25) Termo -> . Termo TIMES Fator
+    (26) Termo -> . Termo DIVIDE Fator
+    (27) Termo -> . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Expr                           shift and go to state 82
+    Termo                          shift and go to state 43
+    Fator                          shift and go to state 44
+
+state 71
+
+    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON . Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (40) Cond -> . Expr Op_rel Expr
+    (22) Expr -> . Expr PLUS Termo
+    (23) Expr -> . Expr MINUS Termo
+    (24) Expr -> . Termo
+    (25) Termo -> . Termo TIMES Fator
+    (26) Termo -> . Termo DIVIDE Fator
+    (27) Termo -> . Fator
+    (28) Fator -> . NUM
+    (29) Fator -> . ID
+    (30) Fator -> . LPAREN Expr RPAREN
+
+    NUM             shift and go to state 45
+    ID              shift and go to state 41
+    LPAREN          shift and go to state 46
+
+    Cond                           shift and go to state 83
+    Expr                           shift and go to state 51
+    Termo                          shift and go to state 43
+    Fator                          shift and go to state 44
+
+state 72
+
+    (17) CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON .
+
+    FIMPROG         reduce using rule 17 (CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON .)
+    LEIA            reduce using rule 17 (CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON .)
+    ESCREVA         reduce using rule 17 (CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON .)
+    IF              reduce using rule 17 (CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON .)
+    WHILE           reduce using rule 17 (CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON .)
+    FOR             reduce using rule 17 (CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON .)
+    ID              reduce using rule 17 (CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON .)
+    RBRACE          reduce using rule 17 (CmdLeitura -> LEIA LPAREN ID RPAREN SEMICOLON .)
+
+
+state 73
+
+    (22) Expr -> Expr PLUS Termo .
+    (25) Termo -> Termo . TIMES Fator
+    (26) Termo -> Termo . DIVIDE Fator
+
+    PLUS            reduce using rule 22 (Expr -> Expr PLUS Termo .)
+    MINUS           reduce using rule 22 (Expr -> Expr PLUS Termo .)
+    SEMICOLON       reduce using rule 22 (Expr -> Expr PLUS Termo .)
+    RPAREN          reduce using rule 22 (Expr -> Expr PLUS Termo .)
+    LT              reduce using rule 22 (Expr -> Expr PLUS Termo .)
+    GT              reduce using rule 22 (Expr -> Expr PLUS Termo .)
+    LE              reduce using rule 22 (Expr -> Expr PLUS Termo .)
+    GE              reduce using rule 22 (Expr -> Expr PLUS Termo .)
+    NE              reduce using rule 22 (Expr -> Expr PLUS Termo .)
+    EQ              reduce using rule 22 (Expr -> Expr PLUS Termo .)
+    TIMES           shift and go to state 57
+    DIVIDE          shift and go to state 58
+
+
+state 74
+
+    (23) Expr -> Expr MINUS Termo .
+    (25) Termo -> Termo . TIMES Fator
+    (26) Termo -> Termo . DIVIDE Fator
+
+    PLUS            reduce using rule 23 (Expr -> Expr MINUS Termo .)
+    MINUS           reduce using rule 23 (Expr -> Expr MINUS Termo .)
+    SEMICOLON       reduce using rule 23 (Expr -> Expr MINUS Termo .)
+    RPAREN          reduce using rule 23 (Expr -> Expr MINUS Termo .)
+    LT              reduce using rule 23 (Expr -> Expr MINUS Termo .)
+    GT              reduce using rule 23 (Expr -> Expr MINUS Termo .)
+    LE              reduce using rule 23 (Expr -> Expr MINUS Termo .)
+    GE              reduce using rule 23 (Expr -> Expr MINUS Termo .)
+    NE              reduce using rule 23 (Expr -> Expr MINUS Termo .)
+    EQ              reduce using rule 23 (Expr -> Expr MINUS Termo .)
+    TIMES           shift and go to state 57
+    DIVIDE          shift and go to state 58
+
+
+state 75
+
+    (25) Termo -> Termo TIMES Fator .
+
+    TIMES           reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    DIVIDE          reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    PLUS            reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    MINUS           reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    SEMICOLON       reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    RPAREN          reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    LT              reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    GT              reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    LE              reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    GE              reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    NE              reduce using rule 25 (Termo -> Termo TIMES Fator .)
+    EQ              reduce using rule 25 (Termo -> Termo TIMES Fator .)
+
+
+state 76
+
+    (26) Termo -> Termo DIVIDE Fator .
+
+    TIMES           reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    DIVIDE          reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    PLUS            reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    MINUS           reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    SEMICOLON       reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    RPAREN          reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    LT              reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    GT              reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    LE              reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    GE              reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    NE              reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+    EQ              reduce using rule 26 (Termo -> Termo DIVIDE Fator .)
+
+
+state 77
+
+    (30) Fator -> LPAREN Expr RPAREN .
+
+    TIMES           reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    DIVIDE          reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    PLUS            reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    MINUS           reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    SEMICOLON       reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    RPAREN          reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    LT              reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    GT              reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    LE              reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    GE              reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    NE              reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+    EQ              reduce using rule 30 (Fator -> LPAREN Expr RPAREN .)
+
+
+state 78
+
+    (18) CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON .
+
+    FIMPROG         reduce using rule 18 (CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON .)
+    LEIA            reduce using rule 18 (CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON .)
+    ESCREVA         reduce using rule 18 (CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON .)
+    IF              reduce using rule 18 (CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON .)
+    WHILE           reduce using rule 18 (CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON .)
+    FOR             reduce using rule 18 (CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON .)
+    ID              reduce using rule 18 (CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON .)
+    RBRACE          reduce using rule 18 (CmdEscrita -> ESCREVA LPAREN TEXTO RPAREN SEMICOLON .)
+
+
+state 79
+
+    (19) CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON .
+
+    FIMPROG         reduce using rule 19 (CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON .)
+    LEIA            reduce using rule 19 (CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON .)
+    ESCREVA         reduce using rule 19 (CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON .)
+    IF              reduce using rule 19 (CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON .)
+    WHILE           reduce using rule 19 (CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON .)
+    FOR             reduce using rule 19 (CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON .)
+    ID              reduce using rule 19 (CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON .)
+    RBRACE          reduce using rule 19 (CmdEscrita -> ESCREVA LPAREN ID RPAREN SEMICOLON .)
+
+
+state 80
+
+    (31) CmdIf -> IF LPAREN Expr Op_rel Expr . RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr . RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (22) Expr -> Expr . PLUS Termo
+    (23) Expr -> Expr . MINUS Termo
+
+    RPAREN          shift and go to state 84
+    PLUS            shift and go to state 55
+    MINUS           shift and go to state 56
+
+
+state 81
+
+    (39) WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE . Bloco RBRACE SEMICOLON
+    (9) Bloco -> . Bloco Cmd
+    (10) Bloco -> . Cmd
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    Bloco                          shift and go to state 85
+    Cmd                            shift and go to state 10
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+    AssignStmt                     shift and go to state 20
+
+state 82
+
+    (40) Cond -> Expr Op_rel Expr .
+    (22) Expr -> Expr . PLUS Termo
+    (23) Expr -> Expr . MINUS Termo
+
+    RPAREN          reduce using rule 40 (Cond -> Expr Op_rel Expr .)
+    SEMICOLON       reduce using rule 40 (Cond -> Expr Op_rel Expr .)
+    PLUS            shift and go to state 55
+    MINUS           shift and go to state 56
+
+
+state 83
+
+    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond . SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+
+    SEMICOLON       shift and go to state 86
+
+
+state 84
+
+    (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN . LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN . LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+
+    LBRACE          shift and go to state 87
+
+
+state 85
+
+    (39) WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco . RBRACE SEMICOLON
+    (9) Bloco -> Bloco . Cmd
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    RBRACE          shift and go to state 88
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    Cmd                            shift and go to state 27
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+    AssignStmt                     shift and go to state 20
+
+state 86
+
+    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON . AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    ID              shift and go to state 18
+
+    AssignStmt                     shift and go to state 89
+
+state 87
+
+    (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE . Bloco RBRACE SEMICOLON
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE . Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (9) Bloco -> . Bloco Cmd
+    (10) Bloco -> . Cmd
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    Bloco                          shift and go to state 90
+    Cmd                            shift and go to state 10
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+    AssignStmt                     shift and go to state 20
+
+state 88
+
+    (39) WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE . SEMICOLON
+
+    SEMICOLON       shift and go to state 91
+
+
+state 89
+
+    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt . RPAREN LBRACE Bloco RBRACE SEMICOLON
+
+    RPAREN          shift and go to state 92
+
+
+state 90
+
+    (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco . RBRACE SEMICOLON
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco . RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (9) Bloco -> Bloco . Cmd
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    RBRACE          shift and go to state 93
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    Cmd                            shift and go to state 27
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+    AssignStmt                     shift and go to state 20
+
+state 91
+
+    (39) WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .
+
+    FIMPROG         reduce using rule 39 (WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    LEIA            reduce using rule 39 (WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    ESCREVA         reduce using rule 39 (WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    IF              reduce using rule 39 (WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    WHILE           reduce using rule 39 (WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    FOR             reduce using rule 39 (WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    ID              reduce using rule 39 (WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    RBRACE          reduce using rule 39 (WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+
+
+state 92
+
+    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN . LBRACE Bloco RBRACE SEMICOLON
+
+    LBRACE          shift and go to state 94
+
+
+state 93
+
+    (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE . SEMICOLON
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE . ELSE LBRACE Bloco RBRACE SEMICOLON
+
+    SEMICOLON       shift and go to state 95
+    ELSE            shift and go to state 96
+
+
+state 94
+
+    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE . Bloco RBRACE SEMICOLON
+    (9) Bloco -> . Bloco Cmd
+    (10) Bloco -> . Cmd
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    AssignStmt                     shift and go to state 20
+    Bloco                          shift and go to state 97
+    Cmd                            shift and go to state 10
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+
+state 95
+
+    (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .
+
+    FIMPROG         reduce using rule 31 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    LEIA            reduce using rule 31 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    ESCREVA         reduce using rule 31 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    IF              reduce using rule 31 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    WHILE           reduce using rule 31 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    FOR             reduce using rule 31 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    ID              reduce using rule 31 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    RBRACE          reduce using rule 31 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+
+
+state 96
+
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE . LBRACE Bloco RBRACE SEMICOLON
+
+    LBRACE          shift and go to state 98
+
+
+state 97
+
+    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco . RBRACE SEMICOLON
+    (9) Bloco -> Bloco . Cmd
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    RBRACE          shift and go to state 99
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    AssignStmt                     shift and go to state 20
+    Cmd                            shift and go to state 27
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+
+state 98
+
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE . Bloco RBRACE SEMICOLON
+    (9) Bloco -> . Bloco Cmd
+    (10) Bloco -> . Cmd
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    Bloco                          shift and go to state 100
+    Cmd                            shift and go to state 10
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+    AssignStmt                     shift and go to state 20
+
+state 99
+
+    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE . SEMICOLON
+
+    SEMICOLON       shift and go to state 101
+
+
+state 100
+
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco . RBRACE SEMICOLON
+    (9) Bloco -> Bloco . Cmd
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    RBRACE          shift and go to state 102
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    Cmd                            shift and go to state 27
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+    AssignStmt                     shift and go to state 20
+
+state 101
+
+    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .
+
+    FIMPROG         reduce using rule 41 (ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    LEIA            reduce using rule 41 (ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    ESCREVA         reduce using rule 41 (ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    IF              reduce using rule 41 (ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    WHILE           reduce using rule 41 (ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    FOR             reduce using rule 41 (ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    ID              reduce using rule 41 (ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+    RBRACE          reduce using rule 41 (ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .)
+
+
+state 102
+
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE . SEMICOLON
+
+    SEMICOLON       shift and go to state 103
+
+
+state 103
+
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON .
+
+    FIMPROG         reduce using rule 32 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON .)
+    LEIA            reduce using rule 32 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON .)
+    ESCREVA         reduce using rule 32 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON .)
+    IF              reduce using rule 32 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON .)
+    WHILE           reduce using rule 32 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON .)
+    FOR             reduce using rule 32 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON .)
+    ID              reduce using rule 32 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON .)
+    RBRACE          reduce using rule 32 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON .)
 

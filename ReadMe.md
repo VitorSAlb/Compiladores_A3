@@ -57,3 +57,7 @@ else:
     print("Valor muito grande")
 
 ```
+
+Execurar o compilador:
+
+python compiler.py input.lang output.py

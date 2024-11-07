@@ -1,0 +1,19 @@
+init
+    int a, b, c;
+    dec d;
+    text msg;
+    escreva("Exemplo");
+    a := 5;
+    if (a < 10) {
+        escreva(a);
+    } else {
+        escreva("Valor muito grande");
+    };
+    while (a < 10) {
+        escreva("Loop enquanto");
+        a := a + 1;
+    };
+    for (a := 0; a < 5; a := a + 1) {
+        escreva("Loop para");
+    };
+fimprog.
