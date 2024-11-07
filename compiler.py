@@ -16,7 +16,7 @@ tokens = [
 # Palavras reservadas
 reserved = {
     'init': 'INIT',
-    'fimprog': 'FIMPROG',  # Ajustado para usar 'fimprog.'
+    'fimprog': 'FIMPROG',
     'int': 'INT',
     'dec': 'DEC',
     'text': 'TEXT',
@@ -118,7 +118,7 @@ def exit_block():
 
 # Regra inicial
 def p_Programa(p):
-    '''Programa : INIT Declara Bloco FIMPROG DOT'''
+    '''Programa : INIT Declara Comandos FIMPROG DOT'''
     pass  # A geração de código principal será feita no compile_source
 
 # Declaração de variáveis
@@ -131,17 +131,32 @@ def p_Declara(p):
     else:
         tipo = p[1]
         ids = p[2]
+    print(f"Declarando tipo: {tipo}, variáveis: {ids}")  # Depuração
+
     for var in ids:
         if var in symbol_table:
             print(f"Erro: Variável '{var}' já declarada.")
             sys.exit(1)
         symbol_table[var] = tipo
+        print(f"Adicionando '{var}' na tabela de símbolos com tipo '{tipo}'")  # Depuração
+
     # Inicializar variáveis no código Python
     for var in ids:
-        if symbol_table[var] == 'INT' or symbol_table[var] == 'DEC':
+        if symbol_table[var] in ('int', 'dec'):  # Alterado para minúsculas
             add_code(f"{var} = 0")
+            print(f"Adicionando código: {var} = 0")  # Depuração
+        elif symbol_table[var] == 'text':  # Alterado para minúsculas
+            add_code(f"{var} = \"\"")
+            print(f"Adicionando código: {var} = \"\"")  # Depuração
+
+    # Inicializar variáveis no código Python
+    for var in ids:
+        if symbol_table[var] in ('INT', 'DEC'):
+            add_code(f"{var} = 0")
+            print(f"Adicionando código: {var} = 0")  # Depuração
         elif symbol_table[var] == 'TEXT':
             add_code(f"{var} = \"\"")
+            print(f"Adicionando código: {var} = \"\"")  # Depuração
 
 def p_Tipo(p):
     '''Tipo : INT
@@ -157,10 +172,13 @@ def p_ListaId(p):
     else:
         p[0] = [p[1]]
 
-# Bloco de comandos
-def p_Bloco(p):
-    '''Bloco : Bloco Cmd
-             | Cmd'''
+# Nova regra para comandos
+def p_Comandos_multiple(p):
+    'Comandos : Comandos Cmd'
+    pass
+
+def p_Comandos_single(p):
+    'Comandos : Cmd'
     pass
 
 # Comando
@@ -259,7 +277,7 @@ def p_Fator_expr(p):
     'Fator : LPAREN Expr RPAREN'
     p[0] = f"({p[2]})"
 
-# Comando if
+# Comando if sem manipulação direta de indentação
 def p_CmdIf(p):
     '''CmdIf : IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
              | IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON'''
@@ -267,20 +285,14 @@ def p_CmdIf(p):
         # Com else
         cond = f"{p[3]} {p[4]} {p[5]}"
         add_code(f"if {cond}:")
-        enter_block()
-        # 'Bloco' comandos já foram adicionados
-        exit_block()
+        # Bloco do if já está indentado
         add_code("else:")
-        enter_block()
-        # 'Bloco' do else já foram adicionados
-        exit_block()
+        # Bloco do else já está indentado
     else:
         # Sem else
         cond = f"{p[3]} {p[4]} {p[5]}"
         add_code(f"if {cond}:")
-        enter_block()
-        # 'Bloco' comandos já foram adicionados
-        exit_block()
+        # Bloco do if já está indentado
 
 # Operador relacional
 def p_Op_rel(p):
@@ -292,32 +304,52 @@ def p_Op_rel(p):
               | EQ'''
     p[0] = p[1]
 
-# Comando while
+# Comando while sem manipulação direta de indentação
 def p_WhileStmt(p):
     'WhileStmt : WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON'
     cond = p[3]
     add_code(f"while {cond}:")
-    enter_block()
-    # 'Bloco' comandos já foram adicionados
-    exit_block()
+    # Bloco já está indentado
 
 def p_Cond(p):
     'Cond : Expr Op_rel Expr'
     p[0] = f"{p[1]} {p[2]} {p[3]}"
 
-# Comando for
+# Comando for sem manipulação direta de indentação
 def p_ForStmt(p):
     'ForStmt : FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON'
     init = p[3]
     cond = p[5]
     increment = p[7]
     # Traduzir para a estrutura equivalente em Python
+    # Usaremos uma estrutura while para simular o for
     add_code(f"{init}")
     add_code(f"while {cond}:")
     enter_block()
-    # 'Bloco' comandos já foram adicionados
+    # Bloco já está indentado
     exit_block()
     add_code(f"{increment}")
+
+# Bloco com ações de indentação
+def p_Bloco(p):
+    '''Bloco : LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE'''
+    pass
+
+def p_Bloco_actions_start(p):
+    'Bloco_actions_start :'
+    enter_block()
+
+def p_Bloco_actions_end(p):
+    'Bloco_actions_end :'
+    exit_block()
+
+def p_Bloco_contents_multiple(p):
+    'Bloco_contents : Bloco_contents Cmd'
+    pass
+
+def p_Bloco_contents_single(p):
+    'Bloco_contents : Cmd'
+    pass
 
 # Regra de erro sintático
 def p_error(p):

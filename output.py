@@ -1,4 +1,4 @@
-# CÃ³digo Python gerado a partir do compilador
+# Código Python gerado a partir do compilador
 def main():
     a = 0
     b = 0
@@ -7,17 +7,6 @@ def main():
     msg = ""
     print("Exemplo")
     a = 5
-    if a < 10:
-        print(a)
-    else:
-        print("Valor muito grande")
-    while a < 10:
-        print("Loop enquanto")
-        a = (a + 1)
-    a = 0
-    while a < 5:
-        print("Loop para")
-        a = (a + 1)
 
 if __name__ == '__main__':
     main()

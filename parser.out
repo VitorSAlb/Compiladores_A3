@@ -3,7 +3,7 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 Grammar
 
 Rule 0     S' -> Programa
-Rule 1     Programa -> INIT Declara Bloco FIMPROG DOT
+Rule 1     Programa -> INIT Declara Comandos FIMPROG DOT
 Rule 2     Declara -> Declara Tipo ListaId SEMICOLON
 Rule 3     Declara -> Tipo ListaId SEMICOLON
 Rule 4     Tipo -> INT
@@ -11,8 +11,8 @@ Rule 5     Tipo -> DEC
 Rule 6     Tipo -> TEXT
 Rule 7     ListaId -> ListaId COMMA ID
 Rule 8     ListaId -> ID
-Rule 9     Bloco -> Bloco Cmd
-Rule 10    Bloco -> Cmd
+Rule 9     Comandos -> Comandos Cmd
+Rule 10    Comandos -> Cmd
 Rule 11    Cmd -> CmdLeitura
 Rule 12    Cmd -> CmdEscrita
 Rule 13    Cmd -> CmdExpr
@@ -44,6 +44,11 @@ Rule 38    Op_rel -> EQ
 Rule 39    WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
 Rule 40    Cond -> Expr Op_rel Expr
 Rule 41    ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+Rule 42    Bloco -> LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE
+Rule 43    Bloco_actions_start -> <empty>
+Rule 44    Bloco_actions_end -> <empty>
+Rule 45    Bloco_contents -> Bloco_contents Cmd
+Rule 46    Bloco_contents -> Cmd
 
 Terminals, with rules where they appear
 
@@ -63,7 +68,7 @@ ID                   : 7 8 17 19 21 29
 IF                   : 31 32
 INIT                 : 1
 INT                  : 4
-LBRACE               : 31 32 32 39 41
+LBRACE               : 31 32 32 39 41 42
 LE                   : 35
 LEIA                 : 17
 LPAREN               : 17 18 19 30 31 32 39 41
@@ -72,7 +77,7 @@ MINUS                : 23
 NE                   : 37
 NUM                  : 28
 PLUS                 : 22
-RBRACE               : 31 32 32 39 41
+RBRACE               : 31 32 32 39 41 42
 RPAREN               : 17 18 19 30 31 32 39 41
 SEMICOLON            : 2 3 17 18 19 20 31 32 39 41 41 41
 TEXT                 : 6
@@ -84,12 +89,16 @@ error                :
 Nonterminals, with rules where they appear
 
 AssignStmt           : 20 41 41
-Bloco                : 1 9 31 32 32 39 41
-Cmd                  : 9 10
+Bloco                : 31 32 32 39 41
+Bloco_actions_end    : 42
+Bloco_actions_start  : 42
+Bloco_contents       : 42 45
+Cmd                  : 9 10 45 46
 CmdEscrita           : 12
 CmdExpr              : 13
 CmdIf                : 14
 CmdLeitura           : 11
+Comandos             : 1 9
 Cond                 : 39 41
 Declara              : 1 2
 Expr                 : 21 22 23 30 31 31 32 32 40 40
@@ -107,7 +116,7 @@ Parsing method: LALR
 state 0
 
     (0) S' -> . Programa
-    (1) Programa -> . INIT Declara Bloco FIMPROG DOT
+    (1) Programa -> . INIT Declara Comandos FIMPROG DOT
 
     INIT            shift and go to state 2
 
@@ -121,7 +130,7 @@ state 1
 
 state 2
 
-    (1) Programa -> INIT . Declara Bloco FIMPROG DOT
+    (1) Programa -> INIT . Declara Comandos FIMPROG DOT
     (2) Declara -> . Declara Tipo ListaId SEMICOLON
     (3) Declara -> . Tipo ListaId SEMICOLON
     (4) Tipo -> . INT
@@ -137,10 +146,10 @@ state 2
 
 state 3
 
-    (1) Programa -> INIT Declara . Bloco FIMPROG DOT
+    (1) Programa -> INIT Declara . Comandos FIMPROG DOT
     (2) Declara -> Declara . Tipo ListaId SEMICOLON
-    (9) Bloco -> . Bloco Cmd
-    (10) Bloco -> . Cmd
+    (9) Comandos -> . Comandos Cmd
+    (10) Comandos -> . Cmd
     (4) Tipo -> . INT
     (5) Tipo -> . DEC
     (6) Tipo -> . TEXT
@@ -170,7 +179,7 @@ state 3
     FOR             shift and go to state 23
     ID              shift and go to state 18
 
-    Bloco                          shift and go to state 8
+    Comandos                       shift and go to state 8
     Tipo                           shift and go to state 9
     Cmd                            shift and go to state 10
     CmdLeitura                     shift and go to state 11
@@ -214,8 +223,8 @@ state 7
 
 state 8
 
-    (1) Programa -> INIT Declara Bloco . FIMPROG DOT
-    (9) Bloco -> Bloco . Cmd
+    (1) Programa -> INIT Declara Comandos . FIMPROG DOT
+    (9) Comandos -> Comandos . Cmd
     (11) Cmd -> . CmdLeitura
     (12) Cmd -> . CmdEscrita
     (13) Cmd -> . CmdExpr
@@ -261,16 +270,15 @@ state 9
 
 state 10
 
-    (10) Bloco -> Cmd .
+    (10) Comandos -> Cmd .
 
-    FIMPROG         reduce using rule 10 (Bloco -> Cmd .)
-    LEIA            reduce using rule 10 (Bloco -> Cmd .)
-    ESCREVA         reduce using rule 10 (Bloco -> Cmd .)
-    IF              reduce using rule 10 (Bloco -> Cmd .)
-    WHILE           reduce using rule 10 (Bloco -> Cmd .)
-    FOR             reduce using rule 10 (Bloco -> Cmd .)
-    ID              reduce using rule 10 (Bloco -> Cmd .)
-    RBRACE          reduce using rule 10 (Bloco -> Cmd .)
+    FIMPROG         reduce using rule 10 (Comandos -> Cmd .)
+    LEIA            reduce using rule 10 (Comandos -> Cmd .)
+    ESCREVA         reduce using rule 10 (Comandos -> Cmd .)
+    IF              reduce using rule 10 (Comandos -> Cmd .)
+    WHILE           reduce using rule 10 (Comandos -> Cmd .)
+    FOR             reduce using rule 10 (Comandos -> Cmd .)
+    ID              reduce using rule 10 (Comandos -> Cmd .)
 
 
 state 11
@@ -427,23 +435,22 @@ state 25
 
 state 26
 
-    (1) Programa -> INIT Declara Bloco FIMPROG . DOT
+    (1) Programa -> INIT Declara Comandos FIMPROG . DOT
 
     DOT             shift and go to state 38
 
 
 state 27
 
-    (9) Bloco -> Bloco Cmd .
+    (9) Comandos -> Comandos Cmd .
 
-    FIMPROG         reduce using rule 9 (Bloco -> Bloco Cmd .)
-    LEIA            reduce using rule 9 (Bloco -> Bloco Cmd .)
-    ESCREVA         reduce using rule 9 (Bloco -> Bloco Cmd .)
-    IF              reduce using rule 9 (Bloco -> Bloco Cmd .)
-    WHILE           reduce using rule 9 (Bloco -> Bloco Cmd .)
-    FOR             reduce using rule 9 (Bloco -> Bloco Cmd .)
-    ID              reduce using rule 9 (Bloco -> Bloco Cmd .)
-    RBRACE          reduce using rule 9 (Bloco -> Bloco Cmd .)
+    FIMPROG         reduce using rule 9 (Comandos -> Comandos Cmd .)
+    LEIA            reduce using rule 9 (Comandos -> Comandos Cmd .)
+    ESCREVA         reduce using rule 9 (Comandos -> Comandos Cmd .)
+    IF              reduce using rule 9 (Comandos -> Comandos Cmd .)
+    WHILE           reduce using rule 9 (Comandos -> Comandos Cmd .)
+    FOR             reduce using rule 9 (Comandos -> Comandos Cmd .)
+    ID              reduce using rule 9 (Comandos -> Comandos Cmd .)
 
 
 state 28
@@ -584,9 +591,9 @@ state 37
 
 state 38
 
-    (1) Programa -> INIT Declara Bloco FIMPROG DOT .
+    (1) Programa -> INIT Declara Comandos FIMPROG DOT .
 
-    $end            reduce using rule 1 (Programa -> INIT Declara Bloco FIMPROG DOT .)
+    $end            reduce using rule 1 (Programa -> INIT Declara Comandos FIMPROG DOT .)
 
 
 state 39
@@ -1171,40 +1178,11 @@ state 80
 state 81
 
     (39) WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE . Bloco RBRACE SEMICOLON
-    (9) Bloco -> . Bloco Cmd
-    (10) Bloco -> . Cmd
-    (11) Cmd -> . CmdLeitura
-    (12) Cmd -> . CmdEscrita
-    (13) Cmd -> . CmdExpr
-    (14) Cmd -> . CmdIf
-    (15) Cmd -> . WhileStmt
-    (16) Cmd -> . ForStmt
-    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
-    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
-    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
-    (20) CmdExpr -> . AssignStmt SEMICOLON
-    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
-    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (21) AssignStmt -> . ID ASSIGN Expr
+    (42) Bloco -> . LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE
 
-    LEIA            shift and go to state 17
-    ESCREVA         shift and go to state 19
-    IF              shift and go to state 21
-    WHILE           shift and go to state 22
-    FOR             shift and go to state 23
-    ID              shift and go to state 18
+    LBRACE          shift and go to state 85
 
-    Bloco                          shift and go to state 85
-    Cmd                            shift and go to state 10
-    CmdLeitura                     shift and go to state 11
-    CmdEscrita                     shift and go to state 12
-    CmdExpr                        shift and go to state 13
-    CmdIf                          shift and go to state 14
-    WhileStmt                      shift and go to state 15
-    ForStmt                        shift and go to state 16
-    AssignStmt                     shift and go to state 20
+    Bloco                          shift and go to state 86
 
 state 82
 
@@ -1222,7 +1200,7 @@ state 83
 
     (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond . SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
 
-    SEMICOLON       shift and go to state 86
+    SEMICOLON       shift and go to state 87
 
 
 state 84
@@ -1230,113 +1208,54 @@ state 84
     (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN . LBRACE Bloco RBRACE SEMICOLON
     (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN . LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
 
-    LBRACE          shift and go to state 87
+    LBRACE          shift and go to state 88
 
 
 state 85
 
-    (39) WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco . RBRACE SEMICOLON
-    (9) Bloco -> Bloco . Cmd
-    (11) Cmd -> . CmdLeitura
-    (12) Cmd -> . CmdEscrita
-    (13) Cmd -> . CmdExpr
-    (14) Cmd -> . CmdIf
-    (15) Cmd -> . WhileStmt
-    (16) Cmd -> . ForStmt
-    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
-    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
-    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
-    (20) CmdExpr -> . AssignStmt SEMICOLON
-    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
-    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (21) AssignStmt -> . ID ASSIGN Expr
+    (42) Bloco -> LBRACE . Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE
+    (43) Bloco_actions_start -> .
 
-    RBRACE          shift and go to state 88
-    LEIA            shift and go to state 17
-    ESCREVA         shift and go to state 19
-    IF              shift and go to state 21
-    WHILE           shift and go to state 22
-    FOR             shift and go to state 23
-    ID              shift and go to state 18
+    LEIA            reduce using rule 43 (Bloco_actions_start -> .)
+    ESCREVA         reduce using rule 43 (Bloco_actions_start -> .)
+    IF              reduce using rule 43 (Bloco_actions_start -> .)
+    WHILE           reduce using rule 43 (Bloco_actions_start -> .)
+    FOR             reduce using rule 43 (Bloco_actions_start -> .)
+    ID              reduce using rule 43 (Bloco_actions_start -> .)
 
-    Cmd                            shift and go to state 27
-    CmdLeitura                     shift and go to state 11
-    CmdEscrita                     shift and go to state 12
-    CmdExpr                        shift and go to state 13
-    CmdIf                          shift and go to state 14
-    WhileStmt                      shift and go to state 15
-    ForStmt                        shift and go to state 16
-    AssignStmt                     shift and go to state 20
+    Bloco_actions_start            shift and go to state 89
 
 state 86
+
+    (39) WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco . RBRACE SEMICOLON
+
+    RBRACE          shift and go to state 90
+
+
+state 87
 
     (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON . AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
     (21) AssignStmt -> . ID ASSIGN Expr
 
     ID              shift and go to state 18
 
-    AssignStmt                     shift and go to state 89
-
-state 87
-
-    (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE . Bloco RBRACE SEMICOLON
-    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE . Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
-    (9) Bloco -> . Bloco Cmd
-    (10) Bloco -> . Cmd
-    (11) Cmd -> . CmdLeitura
-    (12) Cmd -> . CmdEscrita
-    (13) Cmd -> . CmdExpr
-    (14) Cmd -> . CmdIf
-    (15) Cmd -> . WhileStmt
-    (16) Cmd -> . ForStmt
-    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
-    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
-    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
-    (20) CmdExpr -> . AssignStmt SEMICOLON
-    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
-    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (21) AssignStmt -> . ID ASSIGN Expr
-
-    LEIA            shift and go to state 17
-    ESCREVA         shift and go to state 19
-    IF              shift and go to state 21
-    WHILE           shift and go to state 22
-    FOR             shift and go to state 23
-    ID              shift and go to state 18
-
-    Bloco                          shift and go to state 90
-    Cmd                            shift and go to state 10
-    CmdLeitura                     shift and go to state 11
-    CmdEscrita                     shift and go to state 12
-    CmdExpr                        shift and go to state 13
-    CmdIf                          shift and go to state 14
-    WhileStmt                      shift and go to state 15
-    ForStmt                        shift and go to state 16
-    AssignStmt                     shift and go to state 20
+    AssignStmt                     shift and go to state 91
 
 state 88
 
-    (39) WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE . SEMICOLON
+    (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE . Bloco RBRACE SEMICOLON
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE . Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (42) Bloco -> . LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE
 
-    SEMICOLON       shift and go to state 91
+    LBRACE          shift and go to state 85
 
+    Bloco                          shift and go to state 92
 
 state 89
 
-    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt . RPAREN LBRACE Bloco RBRACE SEMICOLON
-
-    RPAREN          shift and go to state 92
-
-
-state 90
-
-    (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco . RBRACE SEMICOLON
-    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco . RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
-    (9) Bloco -> Bloco . Cmd
+    (42) Bloco -> LBRACE Bloco_actions_start . Bloco_contents Bloco_actions_end RBRACE
+    (45) Bloco_contents -> . Bloco_contents Cmd
+    (46) Bloco_contents -> . Cmd
     (11) Cmd -> . CmdLeitura
     (12) Cmd -> . CmdEscrita
     (13) Cmd -> . CmdExpr
@@ -1353,7 +1272,6 @@ state 90
     (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
     (21) AssignStmt -> . ID ASSIGN Expr
 
-    RBRACE          shift and go to state 93
     LEIA            shift and go to state 17
     ESCREVA         shift and go to state 19
     IF              shift and go to state 21
@@ -1361,7 +1279,8 @@ state 90
     FOR             shift and go to state 23
     ID              shift and go to state 18
 
-    Cmd                            shift and go to state 27
+    Bloco_contents                 shift and go to state 93
+    Cmd                            shift and go to state 94
     CmdLeitura                     shift and go to state 11
     CmdEscrita                     shift and go to state 12
     CmdExpr                        shift and go to state 13
@@ -1370,7 +1289,81 @@ state 90
     ForStmt                        shift and go to state 16
     AssignStmt                     shift and go to state 20
 
+state 90
+
+    (39) WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE . SEMICOLON
+
+    SEMICOLON       shift and go to state 95
+
+
 state 91
+
+    (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt . RPAREN LBRACE Bloco RBRACE SEMICOLON
+
+    RPAREN          shift and go to state 96
+
+
+state 92
+
+    (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco . RBRACE SEMICOLON
+    (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco . RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+
+    RBRACE          shift and go to state 97
+
+
+state 93
+
+    (42) Bloco -> LBRACE Bloco_actions_start Bloco_contents . Bloco_actions_end RBRACE
+    (45) Bloco_contents -> Bloco_contents . Cmd
+    (44) Bloco_actions_end -> .
+    (11) Cmd -> . CmdLeitura
+    (12) Cmd -> . CmdEscrita
+    (13) Cmd -> . CmdExpr
+    (14) Cmd -> . CmdIf
+    (15) Cmd -> . WhileStmt
+    (16) Cmd -> . ForStmt
+    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
+    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
+    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
+    (20) CmdExpr -> . AssignStmt SEMICOLON
+    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
+    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
+    (21) AssignStmt -> . ID ASSIGN Expr
+
+    RBRACE          reduce using rule 44 (Bloco_actions_end -> .)
+    LEIA            shift and go to state 17
+    ESCREVA         shift and go to state 19
+    IF              shift and go to state 21
+    WHILE           shift and go to state 22
+    FOR             shift and go to state 23
+    ID              shift and go to state 18
+
+    Bloco_actions_end              shift and go to state 98
+    Cmd                            shift and go to state 99
+    CmdLeitura                     shift and go to state 11
+    CmdEscrita                     shift and go to state 12
+    CmdExpr                        shift and go to state 13
+    CmdIf                          shift and go to state 14
+    WhileStmt                      shift and go to state 15
+    ForStmt                        shift and go to state 16
+    AssignStmt                     shift and go to state 20
+
+state 94
+
+    (46) Bloco_contents -> Cmd .
+
+    LEIA            reduce using rule 46 (Bloco_contents -> Cmd .)
+    ESCREVA         reduce using rule 46 (Bloco_contents -> Cmd .)
+    IF              reduce using rule 46 (Bloco_contents -> Cmd .)
+    WHILE           reduce using rule 46 (Bloco_contents -> Cmd .)
+    FOR             reduce using rule 46 (Bloco_contents -> Cmd .)
+    ID              reduce using rule 46 (Bloco_contents -> Cmd .)
+    RBRACE          reduce using rule 46 (Bloco_contents -> Cmd .)
+
+
+state 95
 
     (39) WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .
 
@@ -1384,61 +1377,52 @@ state 91
     RBRACE          reduce using rule 39 (WhileStmt -> WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON .)
 
 
-state 92
+state 96
 
     (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN . LBRACE Bloco RBRACE SEMICOLON
 
-    LBRACE          shift and go to state 94
+    LBRACE          shift and go to state 100
 
 
-state 93
+state 97
 
     (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE . SEMICOLON
     (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE . ELSE LBRACE Bloco RBRACE SEMICOLON
 
-    SEMICOLON       shift and go to state 95
-    ELSE            shift and go to state 96
+    SEMICOLON       shift and go to state 101
+    ELSE            shift and go to state 102
 
 
-state 94
+state 98
+
+    (42) Bloco -> LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end . RBRACE
+
+    RBRACE          shift and go to state 103
+
+
+state 99
+
+    (45) Bloco_contents -> Bloco_contents Cmd .
+
+    LEIA            reduce using rule 45 (Bloco_contents -> Bloco_contents Cmd .)
+    ESCREVA         reduce using rule 45 (Bloco_contents -> Bloco_contents Cmd .)
+    IF              reduce using rule 45 (Bloco_contents -> Bloco_contents Cmd .)
+    WHILE           reduce using rule 45 (Bloco_contents -> Bloco_contents Cmd .)
+    FOR             reduce using rule 45 (Bloco_contents -> Bloco_contents Cmd .)
+    ID              reduce using rule 45 (Bloco_contents -> Bloco_contents Cmd .)
+    RBRACE          reduce using rule 45 (Bloco_contents -> Bloco_contents Cmd .)
+
+
+state 100
 
     (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE . Bloco RBRACE SEMICOLON
-    (9) Bloco -> . Bloco Cmd
-    (10) Bloco -> . Cmd
-    (11) Cmd -> . CmdLeitura
-    (12) Cmd -> . CmdEscrita
-    (13) Cmd -> . CmdExpr
-    (14) Cmd -> . CmdIf
-    (15) Cmd -> . WhileStmt
-    (16) Cmd -> . ForStmt
-    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
-    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
-    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
-    (20) CmdExpr -> . AssignStmt SEMICOLON
-    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
-    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (21) AssignStmt -> . ID ASSIGN Expr
+    (42) Bloco -> . LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE
 
-    LEIA            shift and go to state 17
-    ESCREVA         shift and go to state 19
-    IF              shift and go to state 21
-    WHILE           shift and go to state 22
-    FOR             shift and go to state 23
-    ID              shift and go to state 18
+    LBRACE          shift and go to state 85
 
-    AssignStmt                     shift and go to state 20
-    Bloco                          shift and go to state 97
-    Cmd                            shift and go to state 10
-    CmdLeitura                     shift and go to state 11
-    CmdEscrita                     shift and go to state 12
-    CmdExpr                        shift and go to state 13
-    CmdIf                          shift and go to state 14
-    WhileStmt                      shift and go to state 15
-    ForStmt                        shift and go to state 16
+    Bloco                          shift and go to state 104
 
-state 95
+state 101
 
     (31) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .
 
@@ -1452,133 +1436,51 @@ state 95
     RBRACE          reduce using rule 31 (CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON .)
 
 
-state 96
+state 102
 
     (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE . LBRACE Bloco RBRACE SEMICOLON
 
-    LBRACE          shift and go to state 98
+    LBRACE          shift and go to state 105
 
 
-state 97
+state 103
+
+    (42) Bloco -> LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE .
+
+    RBRACE          reduce using rule 42 (Bloco -> LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE .)
+
+
+state 104
 
     (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco . RBRACE SEMICOLON
-    (9) Bloco -> Bloco . Cmd
-    (11) Cmd -> . CmdLeitura
-    (12) Cmd -> . CmdEscrita
-    (13) Cmd -> . CmdExpr
-    (14) Cmd -> . CmdIf
-    (15) Cmd -> . WhileStmt
-    (16) Cmd -> . ForStmt
-    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
-    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
-    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
-    (20) CmdExpr -> . AssignStmt SEMICOLON
-    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
-    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (21) AssignStmt -> . ID ASSIGN Expr
 
-    RBRACE          shift and go to state 99
-    LEIA            shift and go to state 17
-    ESCREVA         shift and go to state 19
-    IF              shift and go to state 21
-    WHILE           shift and go to state 22
-    FOR             shift and go to state 23
-    ID              shift and go to state 18
+    RBRACE          shift and go to state 106
 
-    AssignStmt                     shift and go to state 20
-    Cmd                            shift and go to state 27
-    CmdLeitura                     shift and go to state 11
-    CmdEscrita                     shift and go to state 12
-    CmdExpr                        shift and go to state 13
-    CmdIf                          shift and go to state 14
-    WhileStmt                      shift and go to state 15
-    ForStmt                        shift and go to state 16
 
-state 98
+state 105
 
     (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE . Bloco RBRACE SEMICOLON
-    (9) Bloco -> . Bloco Cmd
-    (10) Bloco -> . Cmd
-    (11) Cmd -> . CmdLeitura
-    (12) Cmd -> . CmdEscrita
-    (13) Cmd -> . CmdExpr
-    (14) Cmd -> . CmdIf
-    (15) Cmd -> . WhileStmt
-    (16) Cmd -> . ForStmt
-    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
-    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
-    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
-    (20) CmdExpr -> . AssignStmt SEMICOLON
-    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
-    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (21) AssignStmt -> . ID ASSIGN Expr
+    (42) Bloco -> . LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE
 
-    LEIA            shift and go to state 17
-    ESCREVA         shift and go to state 19
-    IF              shift and go to state 21
-    WHILE           shift and go to state 22
-    FOR             shift and go to state 23
-    ID              shift and go to state 18
+    LBRACE          shift and go to state 85
 
-    Bloco                          shift and go to state 100
-    Cmd                            shift and go to state 10
-    CmdLeitura                     shift and go to state 11
-    CmdEscrita                     shift and go to state 12
-    CmdExpr                        shift and go to state 13
-    CmdIf                          shift and go to state 14
-    WhileStmt                      shift and go to state 15
-    ForStmt                        shift and go to state 16
-    AssignStmt                     shift and go to state 20
+    Bloco                          shift and go to state 107
 
-state 99
+state 106
 
     (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE . SEMICOLON
 
-    SEMICOLON       shift and go to state 101
+    SEMICOLON       shift and go to state 108
 
 
-state 100
+state 107
 
     (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco . RBRACE SEMICOLON
-    (9) Bloco -> Bloco . Cmd
-    (11) Cmd -> . CmdLeitura
-    (12) Cmd -> . CmdEscrita
-    (13) Cmd -> . CmdExpr
-    (14) Cmd -> . CmdIf
-    (15) Cmd -> . WhileStmt
-    (16) Cmd -> . ForStmt
-    (17) CmdLeitura -> . LEIA LPAREN ID RPAREN SEMICOLON
-    (18) CmdEscrita -> . ESCREVA LPAREN TEXTO RPAREN SEMICOLON
-    (19) CmdEscrita -> . ESCREVA LPAREN ID RPAREN SEMICOLON
-    (20) CmdExpr -> . AssignStmt SEMICOLON
-    (31) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (32) CmdIf -> . IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON
-    (39) WhileStmt -> . WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (41) ForStmt -> . FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON
-    (21) AssignStmt -> . ID ASSIGN Expr
 
-    RBRACE          shift and go to state 102
-    LEIA            shift and go to state 17
-    ESCREVA         shift and go to state 19
-    IF              shift and go to state 21
-    WHILE           shift and go to state 22
-    FOR             shift and go to state 23
-    ID              shift and go to state 18
+    RBRACE          shift and go to state 109
 
-    Cmd                            shift and go to state 27
-    CmdLeitura                     shift and go to state 11
-    CmdEscrita                     shift and go to state 12
-    CmdExpr                        shift and go to state 13
-    CmdIf                          shift and go to state 14
-    WhileStmt                      shift and go to state 15
-    ForStmt                        shift and go to state 16
-    AssignStmt                     shift and go to state 20
 
-state 101
+state 108
 
     (41) ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .
 
@@ -1592,14 +1494,14 @@ state 101
     RBRACE          reduce using rule 41 (ForStmt -> FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON .)
 
 
-state 102
+state 109
 
     (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE . SEMICOLON
 
-    SEMICOLON       shift and go to state 103
+    SEMICOLON       shift and go to state 110
 
 
-state 103
+state 110
 
     (32) CmdIf -> IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON .
 
