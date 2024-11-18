@@ -123,6 +123,18 @@ fimprog.
 
 ```
 
-Execurar o compilador:
+# Como utilizar nosso compilador
+
+- No arquivo input.lang introduza o codigo com a linguagem desenvolvida pela equipe
+
+- Após introduzir isto execute o comando a seguir:
+
+``` bash
 
 python compiler.py input.lang output.py
+
+```
+
+- Depois de executar é só conferir o codigo gerado no output.py
+
+
