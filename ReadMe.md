@@ -24,37 +24,102 @@ Id       : (a..z | A..Z) (a..z | A..Z | 0..9)*.
 ## Exemplo de entrada: ( nossa linguagem )
 ``` bash
 init
-    int a, b, c.
-    dec d.
-    text msg.
-    escreva("Exemplo").
-    a := 5.
-    if (a < 10) {
-        escreva(a).
+    int a, b;              
+    dec c;                  
+    text mensagem;           
+
+    escreva("Digite o valor de a:"); 
+    leia(a);             
+
+    escreva("Digite o valor de b:");
+    leia(b);         
+
+    escreva("Digite um valor decimal para c:");
+    leia(c);              
+
+    escreva("Digite uma mensagem:");
+    leia(mensagem);      
+
+
+    if (a > b) {
+        escreva("a é maior que b.");
     } else {
-        escreva("Valor muito grande").
+        escreva("a não é maior que b.");
     }
-fim
+
+    escreva("Contando até 5 usando while:");
+    int contador;       
+    contador := 1;         
+    while (contador <= 5) {
+        escreva(contador);   
+        contador := contador + 1; 
+    }
+
+    escreva("Contando de 1 a 5 usando for:");
+    for (int i := 1; i <= 5; i := i + 1) {
+        escreva(i);
+    }
+
+    escreva("Programa finalizado.");
+fimprog.
 ```
 
+## Exemplos menores: ( nossa linguagem )
 
-## Exemplo de saida: ( pytjon)
+### Exemplo output: ( nossa linguagem )
 
-```python
-a = 0
-b = 0
-c = 0
-d = 0.0 
-msg = "" 
+``` bash
 
-print("Exemplo")
+init
+    int a;
+    escreva(a);
+fimprog.
 
-a = 5
+```
 
-if a < 10:
-    print(a)
-else:
-    print("Valor muito grande")
+### Exemplo for: ( nossa linguagem )
+
+``` bash
+
+init
+    int i;
+    for (i := 0; i < 5; i := i + 1) {
+        escreva(i);
+    }
+fimprog.
+
+
+```
+
+### Exemplo while: ( nossa linguagem )
+
+``` bash
+
+init
+    int a;
+    a := 0;
+    while (a < 5) {
+        escreva(a);
+        a := a + 1;
+    }
+fimprog.
+
+```
+
+### Exemplo if/else: ( nossa linguagem )
+
+``` bash
+
+init
+    int a, b;
+    a := 5;
+    b := 10;
+    if (a < b) {
+        escreva(a);
+    } else {
+        escreva(b);
+    }
+fimprog.
 
 ```
 
