@@ -14,7 +14,7 @@ tokens_definitions = {
     'READ': r'\bleia\b',
     'WRITE': r'\bescreva\b',
     'ASSIGN': r'recebe',
-    'REL_OP': r'menor_igual|maior_igual|igual|diferente|menor|maior',  # Ajustado
+    'REL_OP': r'menor_igual|maior_igual|igual|diferente|menor|maior',
     'ADD_OP': r'mais|menos',
     'MUL_OP': r'vezes|dividido',
     'MOD_OP': r'modulo', 
@@ -32,7 +32,6 @@ tokens_definitions = {
     'WHITESPACE': r'[ \t]+',
 }
 
-# Função para o Lexer
 def lex(code):
     tokens_found = []
     position = 0
@@ -43,7 +42,7 @@ def lex(code):
             match = regex.match(code, position)
             if match:
                 text = match.group(0)
-                if token_type not in ['WHITESPACE', 'NEWLINE']:  # Ignora espaços e novas linhas
+                if token_type not in ['WHITESPACE', 'NEWLINE']: 
                     tokens_found.append((token_type, text))
                 position = match.end(0)
                 break
@@ -51,14 +50,13 @@ def lex(code):
             raise SyntaxError(f'Erro Léxico: caractere inesperado "{code[position]}" na posição {position}')
     return tokens_found
 
-# Função para gerar tokens de um código de entrada
-def tokenize(code):
+def tokenizando(code):
     return lex(code)
 
 def test_rel_op():
     test_code = "menor_igual maior_igual igual diferente menor maior"
     try:
-        tokens = tokenize(test_code)
+        tokens = tokenizando(test_code)
         for token in tokens:
             print(token)
     except SyntaxError as e:
@@ -67,13 +65,13 @@ def test_rel_op():
 if __name__ == "__main__":
     test_rel_op()
 
-class CodeGenerator:
+class Gen:
     def __init__(self):
         self.code = []
         self.indent_level = 0
 
     def add_line(self, line):
-        indent = '    ' * self.indent_level  # Quatro espaços por nível de indentação
+        indent = '    ' * self.indent_level
         self.code.append(f"{indent}{line}")
 
     def increase_indent(self):
@@ -86,9 +84,9 @@ class CodeGenerator:
     def get_code(self):
         return "\n".join(self.code)
 
-class SemanticAnalyzer:
+class Analisation:
     def __init__(self):
-        self.symbol_table = {}  # Guarda variáveis e seus tipos
+        self.symbol_table = {}
 
     def declare_variable(self, name, var_type):
         if name in self.symbol_table:
@@ -108,9 +106,9 @@ class SemanticAnalyzer:
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
-        self.position = 0  # Inicializa a posição atual no fluxo de tokens
-        self.generator = CodeGenerator()
-        self.semantic_analyzer = SemanticAnalyzer()
+        self.position = 0 
+        self.generator = Gen()
+        self.semantic_analyzer = Analisation()
 
     def parse_operador_relacional(self, operador):
         operadores_map = {
@@ -120,7 +118,7 @@ class Parser:
         'diferente': '!=',
         'menor_igual': '<=',
         'maior_igual': '>=',
-        'modulo': '%',  # Adicionado
+        'modulo': '%', 
     }
         if operador not in operadores_map:
             raise ValueError(f"Erro Semântico: Operador relacional '{operador}' inválido.")
@@ -128,9 +126,8 @@ class Parser:
 
 
     def match(self, expected_type):
-        """Verifica se o token atual corresponde ao tipo esperado."""
         if self.position < len(self.tokens) and self.tokens[self.position][0] == expected_type:
-           self.position += 1  # Avança para o próximo token
+           self.position += 1
            return True
         return False
 
@@ -138,7 +135,6 @@ class Parser:
         if not self.match('LPAREN'):
             self.error("Esperado '(' após 'se'")
 
-        # Processa o lado esquerdo da condição
         left_expr, left_type = self.expr()
 
         if not self.match('REL_OP'):
@@ -146,13 +142,11 @@ class Parser:
         operador = self.tokens[self.position - 1][1]
         operador_python = self.parse_operador_relacional(operador)
 
-        # Processa o lado direito da condição
         right_expr, right_type = self.expr()
 
         if not self.match('RPAREN'):
             self.error("Esperado ')' após expressão em 'se'")
 
-        # Gera o código para a condicional
         self.generator.add_line(f"if {left_expr} {operador_python} {right_expr}:")
         self.generator.increase_indent()
 
@@ -229,7 +223,7 @@ class Parser:
         elif self.match('IF'):
             self.cmd_if()
         elif self.match('WHILE'):
-            self.cmd_while()  # Adiciona suporte ao comando 'enquanto'
+            self.cmd_while() 
         elif self.match('FOR'):
             self.cmd_para()
         elif self.tokens[self.position][0] == 'ID' and self.tokens[self.position + 1][0] == 'ASSIGN':
@@ -241,7 +235,6 @@ class Parser:
         if not self.match('LPAREN'):
             self.error("Esperado '(' após 'enquanto'")
 
-        # Processa o lado esquerdo da condição
         left_expr, left_type = self.expr()
 
         if not self.match('REL_OP'):
@@ -249,13 +242,11 @@ class Parser:
         operador = self.tokens[self.position - 1][1]
         operador_python = self.parse_operador_relacional(operador)
 
-        # Processa o lado direito da condição
         right_expr, right_type = self.expr()
 
         if not self.match('RPAREN'):
             self.error("Esperado ')' após expressão em 'enquanto'")
 
-        # Gera o código para o laço enquanto
         self.generator.add_line(f"while {left_expr} {operador_python} {right_expr}:")
         self.generator.increase_indent()
 
@@ -274,12 +265,11 @@ class Parser:
         if not self.match('ID'):
             self.error("Esperado identificador em 'leia'")
         var_name = self.tokens[self.position - 1][1]
-        var_type = self.semantic_analyzer.check_variable(var_name)  # Obtém o tipo esperado da variável
+        var_type = self.semantic_analyzer.check_variable(var_name)
         if not self.match('RPAREN'):
             self.error("Esperado ')' após identificador em 'leia'")
         if not self.match('TERMINATOR'):
             self.error("Esperado '.' após comando 'leia'")
-        # Converte com base no tipo esperado
         if var_type == "int":
             self.generator.add_line(f"{var_name} = int(input())")
         elif var_type == "dec":
@@ -310,12 +300,12 @@ class Parser:
         var_name = self.tokens[self.position - 1][1]
         if not self.match('ASSIGN'):
             self.error("Esperado 'recebe' para atribuição")
-        expression_code, expression_type = self.expr()  # Retorna o código da expressão e o tipo
-        var_type = self.semantic_analyzer.check_variable(var_name)  # Tipo esperado para a variável
-        self.semantic_analyzer.check_type_compatibility(var_name, expression_type)  # Verifica compatibilidade
+        expression_code, expression_type = self.expr()
+        var_type = self.semantic_analyzer.check_variable(var_name)
+        self.semantic_analyzer.check_type_compatibility(var_name, expression_type)
         if not self.match('TERMINATOR'):
             self.error("Esperado '.' após atribuição")
-        self.generator.add_line(f"{var_name} = {expression_code}")  # Adiciona o código da atribuição
+        self.generator.add_line(f"{var_name} = {expression_code}")
 
 
 
@@ -333,7 +323,7 @@ class Parser:
 
     def termo(self):
         left_code, left_type = self.fator()
-        while self.match('MUL_OP') or self.match('MOD_OP'):  # Inclui MOD_OP
+        while self.match('MUL_OP') or self.match('MOD_OP'):
             op = self.tokens[self.position - 1][1]
             op_python = {'vezes': '*', 'dividido': '/', 'modulo': '%'}.get(op, op)
             right_code, right_type = self.fator()
@@ -350,7 +340,7 @@ class Parser:
            var_name = self.tokens[self.position - 1][1]
            var_type = self.semantic_analyzer.check_variable(var_name)
            return var_name, var_type
-        elif self.match('STRING'):  # Novo suporte para strings
+        elif self.match('STRING'):
            string_value = self.tokens[self.position - 1][1]
            return string_value, "texto"
         elif self.match('LPAREN'):
@@ -362,18 +352,15 @@ class Parser:
            self.error("Fator esperado")
 
 def read_code(file_path):
-    """Lê o código do arquivo fornecido pelo usuário."""
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.read()
 
 def compile_to_python(code):
-    """Compila o código da linguagem fictícia para Python."""
-    tokens = tokenize(code)  # Tokeniza o código
-    parser = Parser(tokens)  # Cria o parser com os tokens
-    return parser.parse()  # Retorna o código Python gerado
+    tokens = tokenizando(code) 
+    parser = Parser(tokens) 
+    return parser.parse() 
 
 def save_and_run(generated_code, output_file='output.py'):
-    """Salva o código Python gerado e o executa."""
     with open(output_file, 'w', encoding='utf-8') as file:
         file.write(generated_code)
     
@@ -386,11 +373,7 @@ if __name__ == "__main__":
         print("Uso: python main.py <arquivo_de_entrada>")
         sys.exit(1)
 
-    input_file = sys.argv[1]  # Arquivo de entrada fornecido pelo usuário
-    
-    # Lê e compila o código da linguagem fictícia para Python
+    input_file = sys.argv[1]
     code = read_code(input_file)
     generated_code = compile_to_python(code)
-    
-    # Salva e executa o código Python gerado
     save_and_run(generated_code)
