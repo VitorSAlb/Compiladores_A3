@@ -58,7 +58,7 @@ def test_rel_op():
     try:
         tokens = tokenizando(test_code)
         for token in tokens:
-            print(token)
+            print("testanto token: ", token)
     except SyntaxError as e:
         print(e)
 
@@ -364,7 +364,7 @@ def save_and_run(generated_code, output_file='output.py'):
     with open(output_file, 'w', encoding='utf-8') as file:
         file.write(generated_code)
     
-    print("Executando o código...")
+    print("Gerando...")
     with open(output_file, 'r', encoding='utf-8') as file:
         exec(file.read())
 
