@@ -1,0 +1,27 @@
+init
+    dec numero.
+    dec soma.
+    int contador.
+
+    escreva("Digite um número decimal:").
+    leia(numero).
+
+    soma recebe 1.1.
+    contador recebe 1.
+
+    enquanto (contador menor_igual numero) {
+        soma recebe soma mais contador.
+        contador recebe contador mais 1.
+    }
+
+    se (soma maior 20) {
+        escreva("Game Over").
+    } 
+
+    se (soma menor_igual 20) {
+        escreva("Soma fica").
+        escreva(numero).
+        escreva("é:").
+        escreva(soma).
+    }
+fim
