@@ -1,395 +1,236 @@
-import sys
-import ply.lex as lex
-import ply.yacc as yacc
+import re
 
-# Lista de tokens
-tokens = [
-    'ID', 'NUM', 'TEXTO',
-    'PLUS', 'MINUS', 'TIMES', 'DIVIDE',
-    'ASSIGN',
-    'LPAREN', 'RPAREN',
-    'LBRACE', 'RBRACE',
-    'SEMICOLON', 'COMMA', 'DOT',
-    'LT', 'GT', 'LE', 'GE', 'NE', 'EQ'
-]
-
-# Palavras reservadas
-reserved = {
-    'init': 'INIT',
-    'fimprog': 'FIMPROG',
-    'int': 'INT',
-    'dec': 'DEC',
-    'text': 'TEXT',
-    'leia': 'LEIA',
-    'escreva': 'ESCREVA',
-    'if': 'IF',
-    'else': 'ELSE',
-    'while': 'WHILE',
-    'for': 'FOR'
+# Lexer
+tokens_definitions = {
+    'INIT': r'\binit\b',
+    'END': r'\bfim\b',
+    'INT': r'\bint\b',
+    'DEC': r'\bdec\b',
+    'TEXT': r'\btext\b',
+    'IF': r'\bif\b',
+    'ELSE': r'\belse\b',
+    'WHILE': r'\bwhile\b',
+    'FOR': r'\bfor\b',
+    'READ': r'\bleia\b',
+    'WRITE': r'\bescreva\b',
+    'ASSIGN': r':=',
+    'REL_OP': r'<|>|<=|>=|!=|==',
+    'ADD_OP': r'\+|-',
+    'MUL_OP': r'\*|/',
+    'LPAREN': r'\(',
+    'RPAREN': r'\)',
+    'LBRACE': r'\{',
+    'RBRACE': r'\}',
+    'COMMA': r',',
+    'SEMI': r';',
+    'NUMBER': r'\d+(\.\d+)?',
+    'ID': r'[a-zA-Z_][a-zA-Z0-9_]*',
+    'STRING': r'"[^"]*"',
+    'WHITESPACE': r'[ \t]+',
+    'NEWLINE': r'\n',
 }
 
-tokens += list(reserved.values())
+def lex(code):
+    tokens_found = []
+    position = 0
+    while position < len(code):
+        match = None
+        for token_type, pattern in tokens_definitions.items():
+            regex = re.compile(pattern)
+            match = regex.match(code, position)
+            if match:
+                text = match.group(0)
+                if token_type not in ['WHITESPACE', 'NEWLINE']:
+                    tokens_found.append((token_type, text))
+                position = match.end(0)
+                break
+        if not match:
+            raise SyntaxError(f"Erro Léxico: caractere inesperado '{code[position]}' na posição {position}")
+    return tokens_found
 
-# Expressões regulares para tokens simples
-t_PLUS       = r'\+'
-t_MINUS      = r'-'
-t_TIMES      = r'\*'
-t_DIVIDE     = r'/'
-t_ASSIGN     = r':='
-t_LPAREN     = r'\('
-t_RPAREN     = r'\)'
-t_LBRACE     = r'\{'
-t_RBRACE     = r'\}'
-t_SEMICOLON  = r';'
-t_COMMA      = r','
-t_DOT        = r'\.'
+# Parser
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.position = 0
+        self.code = []
 
-t_LE         = r'<='
-t_GE         = r'>='
-t_NE         = r'!='
-t_EQ         = r'=='
-t_LT         = r'<'
-t_GT         = r'>'
+    def match(self, expected_type):
+        if self.position < len(self.tokens) and self.tokens[self.position][0] == expected_type:
+            self.position += 1
+            return True
+        return False
 
-# Ignorar espaços e tabs
-t_ignore = ' \t'
+    def error(self, message="Erro de Sintaxe"):
+        current_token = self.tokens[self.position] if self.position < len(self.tokens) else "EOF"
+        raise SyntaxError(f"{message} no token {current_token} na posição {self.position}")
 
-# Definição de tokens com ações
+    def parse(self):
+        self.program()
+        return "\n".join(self.code)
 
-def t_TEXTO(t):
-    r'\"([^\\\n]|(\\.))*?\"'
-    t.value = t.value[1:-1]  # Remover as aspas
-    return t
+    def program(self):
+        if not self.match('INIT'):
+            self.error("Esperado 'init'")
+        self.declara()
+        self.bloco()
+        if not self.match('END'):
+            self.error("Esperado 'fim'")
 
-def t_NUM(t):
-    r'\d+(\.\d+)?'
-    if '.' in t.value:
-        t.value = float(t.value)
-    else:
-        t.value = int(t.value)
-    return t
+    def declara(self):
+        while self.tokens[self.position][0] in ['INT', 'DEC', 'TEXT']:
+            tipo = self.tokens[self.position][1]
+            self.position += 1
+            ids = []
+            while self.match('ID'):
+                ids.append(self.tokens[self.position - 1][1])
+                if not self.match('COMMA'):
+                    break
+            if not self.match('SEMI'):
+                self.error("Esperado ';' após declaração")
+            for var in ids:
+                if tipo == "int":
+                    self.code.append(f"{var} = 0")
+                elif tipo == "dec":
+                    self.code.append(f"{var} = 0.0")
+                elif tipo == "text":
+                    self.code.append(f"{var} = ''")
 
-def t_ID(t):
-    r'[a-zA-Z][a-zA-Z0-9]*'
-    t.type = reserved.get(t.value, 'ID')  # Verifica se é palavra reservada
-    return t
+    def bloco(self):
+        while self.tokens[self.position][0] in ['READ', 'WRITE', 'ID', 'IF', 'WHILE', 'FOR']:
+            self.cmd()
 
-# Contagem de linhas
-def t_newline(t):
-    r'\n+'
-    t.lexer.lineno += len(t.value)
+    def cmd(self):
+        if self.match('READ'):
+            self.cmd_leitura()
+        elif self.match('WRITE'):
+            self.cmd_escrita()
+        elif self.match('ID') and self.match('ASSIGN'):
+            self.cmd_expr()
+        elif self.match('IF'):
+            self.cmd_if()
+        elif self.match('WHILE'):
+            self.cmd_while()
+        elif self.match('FOR'):
+            self.cmd_for()
+        else:
+            self.error("Comando inválido")
 
-# Ignorar comentários
-def t_COMMENT(t):
-    r'//.*'
-    pass
+    def cmd_leitura(self):
+        if not self.match('LPAREN'):
+            self.error("Esperado '(' após 'leia'")
+        if not self.match('ID'):
+            self.error("Esperado identificador em 'leia'")
+        var = self.tokens[self.position - 1][1]
+        if not self.match('RPAREN') or not self.match('SEMI'):
+            self.error("Erro no comando 'leia'")
+        self.code.append(f"{var} = input()")
 
-# Definir erro léxico
-def t_error(t):
-    print(f"Caractere ilegal '{t.value[0]}' na linha {t.lineno}")
-    t.lexer.skip(1)
+    def cmd_escrita(self):
+        if not self.match('LPAREN'):
+            self.error("Esperado '(' após 'escreva'")
+        if self.match('STRING'):
+            texto = self.tokens[self.position - 1][1]
+            self.code.append(f"print({texto})")
+        elif self.match('ID'):
+            var = self.tokens[self.position - 1][1]
+            self.code.append(f"print({var})")
+        else:
+            self.error("Esperado texto ou identificador em 'escreva'")
+        if not self.match('RPAREN') or not self.match('SEMI'):
+            self.error("Erro no comando 'escreva'")
 
-# Construir o lexer
-lexer = lex.lex()
+    def cmd_expr(self):
+        var = self.tokens[self.position - 2][1]
+        expr = self.expr()
+        if not self.match('SEMI'):
+            self.error("Esperado ';' após expressão")
+        self.code.append(f"{var} = {expr}")
 
-# Precedência dos operadores
-precedence = (
-    ('left', 'PLUS', 'MINUS'),
-    ('left', 'TIMES', 'DIVIDE'),
-)
+    def cmd_if(self):
+        if not self.match('LPAREN'):
+            self.error("Esperado '(' após 'if'")
+        cond = self.expr()
+        if not self.match('RPAREN'):
+            self.error("Esperado ')' após condição")
+        if not self.match('LBRACE'):
+            self.error("Esperado '{' após 'if'")
+        self.code.append(f"if {cond}:")
+        self.cmd_bloco()
+        if self.match('ELSE'):
+            if not self.match('LBRACE'):
+                self.error("Esperado '{' após 'else'")
+            self.code.append("else:")
+            self.cmd_bloco()
 
-# Dicionário para armazenar variáveis e seus tipos
-symbol_table = {}
+    def cmd_while(self):
+        if not self.match('LPAREN'):
+            self.error("Esperado '(' após 'while'")
+        cond = self.expr()
+        if not self.match('RPAREN'):
+            self.error("Esperado ')' após condição")
+        if not self.match('LBRACE'):
+            self.error("Esperado '{' após 'while'")
+        self.code.append(f"while {cond}:")
+        self.cmd_bloco()
 
-# Lista para armazenar código gerado
-code_lines = []
-indent_level = 1  # Começa com 1 dentro da função main()
+    def cmd_for(self):
+        if not self.match('LPAREN'):
+            self.error("Esperado '(' após 'for'")
+        assign1 = self.cmd_expr()
+        cond = self.expr()
+        assign2 = self.cmd_expr()
+        if not self.match('RPAREN'):
+            self.error("Esperado ')' após 'for'")
+        if not self.match('LBRACE'):
+            self.error("Esperado '{' após 'for'")
+        self.code.append(f"for {assign1}; {cond}; {assign2}:")
+        self.cmd_bloco()
 
-def add_code(line):
-    code_lines.append('    ' * indent_level + line)
+    def cmd_bloco(self):
+        while self.tokens[self.position][0] not in ['RBRACE']:
+            self.cmd()
+        if not self.match('RBRACE'):
+            self.error("Esperado '}' ao final do bloco")
 
-def enter_block():
-    global indent_level
-    indent_level += 1
+    def expr(self):
+        result = ""
+        while self.tokens[self.position][0] in ['ID', 'NUMBER', 'ADD_OP', 'MUL_OP', 'LPAREN', 'RPAREN']:
+            result += self.tokens[self.position][1]
+            self.position += 1
+        return result
 
-def exit_block():
-    global indent_level
-    indent_level -= 1
+arquivo_output = 'codigo_saida.py'
 
-# Regra inicial
-def p_Programa(p):
-    '''Programa : INIT Declara Comandos FIMPROG DOT'''
-    pass  # A geração de código principal será feita no compile_source
-
-# Declaração de variáveis
-def p_Declara(p):
-    '''Declara : Declara Tipo ListaId SEMICOLON
-               | Tipo ListaId SEMICOLON'''
-    if len(p) == 5:
-        tipo = p[2]
-        ids = p[3]
-    else:
-        tipo = p[1]
-        ids = p[2]
-    print(f"Declarando tipo: {tipo}, variáveis: {ids}")  # Depuração
-
-    for var in ids:
-        if var in symbol_table:
-            print(f"Erro: Variável '{var}' já declarada.")
-            sys.exit(1)
-        symbol_table[var] = tipo
-        print(f"Adicionando '{var}' na tabela de símbolos com tipo '{tipo}'")  # Depuração
-
-    # Inicializar variáveis no código Python
-    for var in ids:
-        if symbol_table[var] in ('int', 'dec'):  # Alterado para minúsculas
-            add_code(f"{var} = 0")
-            print(f"Adicionando código: {var} = 0")  # Depuração
-        elif symbol_table[var] == 'text':  # Alterado para minúsculas
-            add_code(f"{var} = \"\"")
-            print(f"Adicionando código: {var} = \"\"")  # Depuração
-
-    # Inicializar variáveis no código Python
-    for var in ids:
-        if symbol_table[var] in ('INT', 'DEC'):
-            add_code(f"{var} = 0")
-            print(f"Adicionando código: {var} = 0")  # Depuração
-        elif symbol_table[var] == 'TEXT':
-            add_code(f"{var} = \"\"")
-            print(f"Adicionando código: {var} = \"\"")  # Depuração
-
-def p_Tipo(p):
-    '''Tipo : INT
-            | DEC
-            | TEXT'''
-    p[0] = p[1]
-
-def p_ListaId(p):
-    '''ListaId : ListaId COMMA ID
-               | ID'''
-    if len(p) == 4:
-        p[0] = p[1] + [p[3]]
-    else:
-        p[0] = [p[1]]
-
-# Nova regra para comandos
-def p_Comandos_multiple(p):
-    'Comandos : Comandos Cmd'
-    pass
-
-def p_Comandos_single(p):
-    'Comandos : Cmd'
-    pass
-
-# Comando
-def p_Cmd(p):
-    '''Cmd : CmdLeitura
-           | CmdEscrita
-           | CmdExpr
-           | CmdIf
-           | WhileStmt
-           | ForStmt'''
-    pass
-
-# Comando de leitura
-def p_CmdLeitura(p):
-    'CmdLeitura : LEIA LPAREN ID RPAREN SEMICOLON'
-    var = p[3]
-    if var not in symbol_table:
-        print(f"Erro: Variável '{var}' não declarada antes da leitura.")
-        sys.exit(1)
-    var_type = symbol_table[var]
-    if var_type == 'INT':
-        add_code(f"{var} = int(input())")
-    elif var_type == 'DEC':
-        add_code(f"{var} = float(input())")
-    elif var_type == 'TEXT':
-        add_code(f"{var} = input()")
-
-# Comando de escrita
-def p_CmdEscrita(p):
-    '''CmdEscrita : ESCREVA LPAREN TEXTO RPAREN SEMICOLON
-                  | ESCREVA LPAREN ID RPAREN SEMICOLON'''
-    if p.slice[3].type == 'TEXTO':
-        add_code(f'print("{p[3]}")')
-    else:
-        var = p[3]
-        if var not in symbol_table:
-            print(f"Erro: Variável '{var}' não declarada antes da escrita.")
-            sys.exit(1)
-        add_code(f'print({var})')
-
-# Comando de atribuição
-def p_CmdExpr(p):
-    'CmdExpr : AssignStmt SEMICOLON'
-    add_code(p[1])
-
-# AssignStmt
-def p_AssignStmt(p):
-    'AssignStmt : ID ASSIGN Expr'
-    var = p[1]
-    expr = p[3]
-    if var not in symbol_table:
-        print(f"Erro: Variável '{var}' não declarada antes da atribuição.")
-        sys.exit(1)
-    p[0] = f"{var} = {expr}"
-
-# Expressão
-def p_Expr_plus(p):
-    'Expr : Expr PLUS Termo'
-    p[0] = f"({p[1]} + {p[3]})"
-
-def p_Expr_minus(p):
-    'Expr : Expr MINUS Termo'
-    p[0] = f"({p[1]} - {p[3]})"
-
-def p_Expr_term(p):
-    'Expr : Termo'
-    p[0] = p[1]
-
-# Termo
-def p_Termo_times(p):
-    'Termo : Termo TIMES Fator'
-    p[0] = f"({p[1]} * {p[3]})"
-
-def p_Termo_divide(p):
-    'Termo : Termo DIVIDE Fator'
-    p[0] = f"({p[1]} / {p[3]})"
-
-def p_Termo_fator(p):
-    'Termo : Fator'
-    p[0] = p[1]
-
-# Fator
-def p_Fator_num(p):
-    'Fator : NUM'
-    p[0] = str(p[1])
-
-def p_Fator_id(p):
-    'Fator : ID'
-    var = p[1]
-    if var not in symbol_table:
-        print(f"Erro: Variável '{var}' não declarada antes do uso.")
-        sys.exit(1)
-    p[0] = var
-
-def p_Fator_expr(p):
-    'Fator : LPAREN Expr RPAREN'
-    p[0] = f"({p[2]})"
-
-# Comando if sem manipulação direta de indentação
-def p_CmdIf(p):
-    '''CmdIf : IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
-             | IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON'''
-    if len(p) == 12:
-        # Com else
-        cond = f"{p[3]} {p[4]} {p[5]}"
-        add_code(f"if {cond}:")
-        # Bloco do if já está indentado
-        add_code("else:")
-        # Bloco do else já está indentado
-    else:
-        # Sem else
-        cond = f"{p[3]} {p[4]} {p[5]}"
-        add_code(f"if {cond}:")
-        # Bloco do if já está indentado
-
-# Operador relacional
-def p_Op_rel(p):
-    '''Op_rel : LT
-              | GT
-              | LE
-              | GE
-              | NE
-              | EQ'''
-    p[0] = p[1]
-
-# Comando while sem manipulação direta de indentação
-def p_WhileStmt(p):
-    'WhileStmt : WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON'
-    cond = p[3]
-    add_code(f"while {cond}:")
-    # Bloco já está indentado
-
-def p_Cond(p):
-    'Cond : Expr Op_rel Expr'
-    p[0] = f"{p[1]} {p[2]} {p[3]}"
-
-# Comando for sem manipulação direta de indentação
-def p_ForStmt(p):
-    'ForStmt : FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON'
-    init = p[3]
-    cond = p[5]
-    increment = p[7]
-    # Traduzir para a estrutura equivalente em Python
-    # Usaremos uma estrutura while para simular o for
-    add_code(f"{init}")
-    add_code(f"while {cond}:")
-    enter_block()
-    # Bloco já está indentado
-    exit_block()
-    add_code(f"{increment}")
-
-# Bloco com ações de indentação
-def p_Bloco(p):
-    '''Bloco : LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE'''
-    pass
-
-def p_Bloco_actions_start(p):
-    'Bloco_actions_start :'
-    enter_block()
-
-def p_Bloco_actions_end(p):
-    'Bloco_actions_end :'
-    exit_block()
-
-def p_Bloco_contents_multiple(p):
-    'Bloco_contents : Bloco_contents Cmd'
-    pass
-
-def p_Bloco_contents_single(p):
-    'Bloco_contents : Cmd'
-    pass
-
-# Regra de erro sintático
-def p_error(p):
-    if p:
-        print(f"Erro de sintaxe em '{p.value}' na linha {p.lineno}")
-    else:
-        print("Erro de sintaxe na entrada.")
-    sys.exit(1)
-
-# Construir o parser
-parser = yacc.yacc()
-
-def compile_source(source_code):
-    global code_lines, indent_level
-    code_lines = []
-    indent_level = 1  # Dentro da função main()
-    parser.parse(source_code)
-    main_code = '\n'.join(code_lines)
-    compiled_code = f"def main():\n{main_code}\n\nif __name__ == '__main__':\n    main()"
-    return compiled_code
-
-if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print("Uso: python compiler.py input.lang output.py")
-        sys.exit(1)
-
-    input_file = sys.argv[1]
-    output_file = sys.argv[2]
-
-    with open(input_file, 'r') as f:
-        source = f.read()
-
+# Main
+def compiler():
+    code = """
+    init
+    int a, b, d;
+    dec c;
+    text t;
+    a := 5;
+    b := 10;
+    c := a + b;
+    escreva(a);
+    escreva(c);
+    while() {
+    escreva(1);
+    c := c + 1
+    }
+    leia(d);
+    fim
+    """
+    tokens = lex(code)
+    parser = Parser(tokens)
     try:
-        python_output = compile_source(source)
-    except Exception as e:
-        print(f"Compilação falhou: {e}")
-        sys.exit(1)
+        python_code = parser.parse()
+        
+        with open(arquivo_output, 'w', encoding='utf-8') as f:
+            f.write(python_code)
 
-    with open(output_file, 'w') as f:
-        f.write("# Código Python gerado a partir do compilador\n")
-        f.write(python_output)
 
-    print(f"Compilação concluída. Código Python gerado em '{output_file}'.")
+    except SyntaxError as e:
+        print(f"Erro: {e}")
+
+compiler()
