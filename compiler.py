@@ -1,395 +1,379 @@
 import sys
-import ply.lex as lex
-import ply.yacc as yacc
+import re
 
-# Lista de tokens
-tokens = [
-    'ID', 'NUM', 'TEXTO',
-    'PLUS', 'MINUS', 'TIMES', 'DIVIDE',
-    'ASSIGN',
-    'LPAREN', 'RPAREN',
-    'LBRACE', 'RBRACE',
-    'SEMICOLON', 'COMMA', 'DOT',
-    'LT', 'GT', 'LE', 'GE', 'NE', 'EQ'
-]
-
-# Palavras reservadas
-reserved = {
-    'init': 'INIT',
-    'fimprog': 'FIMPROG',
-    'int': 'INT',
-    'dec': 'DEC',
-    'text': 'TEXT',
-    'leia': 'LEIA',
-    'escreva': 'ESCREVA',
-    'if': 'IF',
-    'else': 'ELSE',
-    'while': 'WHILE',
-    'for': 'FOR'
+tokens_definitions = {
+    'PROGRAM': r'\binit\b',
+    'END_PROGRAM': r'\bfim\b',
+    'INT': r'\bint\b',
+    'DECIMAL': r'\bdec\b',
+    'TEXT': r'\btexto\b',
+    'IF': r'\bse\b',
+    'ELSE': r'\bsenao\b',
+    'WHILE': r'\benquanto\b',
+    'FOR': r'\bpara\b',
+    'READ': r'\bleia\b',
+    'WRITE': r'\bescreva\b',
+    'ASSIGN': r'recebe',
+    'REL_OP': r'menor_igual|maior_igual|igual|diferente|menor|maior',
+    'ADD_OP': r'mais|menos',
+    'MUL_OP': r'vezes|dividido',
+    'MOD_OP': r'modulo', 
+    'LPAREN': r'\(',
+    'RPAREN': r'\)',
+    'LBRACE': r'\{',
+    'RBRACE': r'\}',
+    'COMMA': r',',
+    'SEMI': r';',
+    'TERMINATOR': r'\.',
+    'NUMBER': r'\d+(\.\d+)?',
+    'ID': r'[a-zA-Z_][a-zA-Z0-9_]*',
+    'STRING': r'"[^"]*"',
+    'NEWLINE': r'\n',
+    'WHITESPACE': r'[ \t]+',
 }
 
-tokens += list(reserved.values())
+def lex(code):
+    tokens_found = []
+    position = 0
+    while position < len(code):
+        match = None
+        for token_type, pattern in tokens_definitions.items():
+            regex = re.compile(pattern)
+            match = regex.match(code, position)
+            if match:
+                text = match.group(0)
+                if token_type not in ['WHITESPACE', 'NEWLINE']: 
+                    tokens_found.append((token_type, text))
+                position = match.end(0)
+                break
+        if not match:
+            raise SyntaxError(f'Erro Léxico: caractere inesperado "{code[position]}" na posição {position}')
+    return tokens_found
 
-# Expressões regulares para tokens simples
-t_PLUS       = r'\+'
-t_MINUS      = r'-'
-t_TIMES      = r'\*'
-t_DIVIDE     = r'/'
-t_ASSIGN     = r':='
-t_LPAREN     = r'\('
-t_RPAREN     = r'\)'
-t_LBRACE     = r'\{'
-t_RBRACE     = r'\}'
-t_SEMICOLON  = r';'
-t_COMMA      = r','
-t_DOT        = r'\.'
+def tokenizando(code):
+    return lex(code)
 
-t_LE         = r'<='
-t_GE         = r'>='
-t_NE         = r'!='
-t_EQ         = r'=='
-t_LT         = r'<'
-t_GT         = r'>'
+def test_rel_op():
+    test_code = "menor_igual maior_igual igual diferente menor maior"
+    try:
+        tokens = tokenizando(test_code)
+        for token in tokens:
+            print("testanto token: ", token)
+    except SyntaxError as e:
+        print(e)
 
-# Ignorar espaços e tabs
-t_ignore = ' \t'
+if __name__ == "__main__":
+    test_rel_op()
 
-# Definição de tokens com ações
+class Gen:
+    def __init__(self):
+        self.code = []
+        self.indent_level = 0
 
-def t_TEXTO(t):
-    r'\"([^\\\n]|(\\.))*?\"'
-    t.value = t.value[1:-1]  # Remover as aspas
-    return t
+    def add_line(self, line):
+        indent = '    ' * self.indent_level
+        self.code.append(f"{indent}{line}")
 
-def t_NUM(t):
-    r'\d+(\.\d+)?'
-    if '.' in t.value:
-        t.value = float(t.value)
-    else:
-        t.value = int(t.value)
-    return t
+    def increase_indent(self):
+        self.indent_level += 1
 
-def t_ID(t):
-    r'[a-zA-Z][a-zA-Z0-9]*'
-    t.type = reserved.get(t.value, 'ID')  # Verifica se é palavra reservada
-    return t
+    def decrease_indent(self):
+        if self.indent_level > 0:
+            self.indent_level -= 1
 
-# Contagem de linhas
-def t_newline(t):
-    r'\n+'
-    t.lexer.lineno += len(t.value)
+    def get_code(self):
+        return "\n".join(self.code)
 
-# Ignorar comentários
-def t_COMMENT(t):
-    r'//.*'
-    pass
+class Analisation:
+    def __init__(self):
+        self.symbol_table = {}
 
-# Definir erro léxico
-def t_error(t):
-    print(f"Caractere ilegal '{t.value[0]}' na linha {t.lineno}")
-    t.lexer.skip(1)
+    def declare_variable(self, name, var_type):
+        if name in self.symbol_table:
+            raise ValueError(f"Erro Semântico: Variável '{name}' já foi declarada.")
+        self.symbol_table[name] = var_type
 
-# Construir o lexer
-lexer = lex.lex()
+    def check_variable(self, name):
+        if name not in self.symbol_table:
+            raise ValueError(f"Erro Semântico: Variável '{name}' não foi declarada.")
+        return self.symbol_table[name]
 
-# Precedência dos operadores
-precedence = (
-    ('left', 'PLUS', 'MINUS'),
-    ('left', 'TIMES', 'DIVIDE'),
-)
+    def check_type_compatibility(self, var_name, expression_type):
+        var_type = self.check_variable(var_name)
+        if var_type != expression_type:
+            raise ValueError(f"Erro Semântico: Tipo incompatível para '{var_name}', esperado '{var_type}' mas obteve '{expression_type}'.")
 
-# Dicionário para armazenar variáveis e seus tipos
-symbol_table = {}
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.position = 0 
+        self.generator = Gen()
+        self.semantic_analyzer = Analisation()
 
-# Lista para armazenar código gerado
-code_lines = []
-indent_level = 1  # Começa com 1 dentro da função main()
+    def parse_operador_relacional(self, operador):
+        operadores_map = {
+        'menor': '<',
+        'maior': '>',
+        'igual': '==',
+        'diferente': '!=',
+        'menor_igual': '<=',
+        'maior_igual': '>=',
+        'modulo': '%', 
+    }
+        if operador not in operadores_map:
+            raise ValueError(f"Erro Semântico: Operador relacional '{operador}' inválido.")
+        return operadores_map[operador]
 
-def add_code(line):
-    code_lines.append('    ' * indent_level + line)
 
-def enter_block():
-    global indent_level
-    indent_level += 1
+    def match(self, expected_type):
+        if self.position < len(self.tokens) and self.tokens[self.position][0] == expected_type:
+           self.position += 1
+           return True
+        return False
 
-def exit_block():
-    global indent_level
-    indent_level -= 1
+    def cmd_if(self):
+        if not self.match('LPAREN'):
+            self.error("Esperado '(' após 'se'")
 
-# Regra inicial
-def p_Programa(p):
-    '''Programa : INIT Declara Comandos FIMPROG DOT'''
-    pass  # A geração de código principal será feita no compile_source
+        left_expr, left_type = self.expr()
 
-# Declaração de variáveis
-def p_Declara(p):
-    '''Declara : Declara Tipo ListaId SEMICOLON
-               | Tipo ListaId SEMICOLON'''
-    if len(p) == 5:
-        tipo = p[2]
-        ids = p[3]
-    else:
-        tipo = p[1]
-        ids = p[2]
-    print(f"Declarando tipo: {tipo}, variáveis: {ids}")  # Depuração
+        if not self.match('REL_OP'):
+            self.error("Operador relacional esperado em 'se'")
+        operador = self.tokens[self.position - 1][1]
+        operador_python = self.parse_operador_relacional(operador)
 
-    for var in ids:
-        if var in symbol_table:
-            print(f"Erro: Variável '{var}' já declarada.")
-            sys.exit(1)
-        symbol_table[var] = tipo
-        print(f"Adicionando '{var}' na tabela de símbolos com tipo '{tipo}'")  # Depuração
+        right_expr, right_type = self.expr()
 
-    # Inicializar variáveis no código Python
-    for var in ids:
-        if symbol_table[var] in ('int', 'dec'):  # Alterado para minúsculas
-            add_code(f"{var} = 0")
-            print(f"Adicionando código: {var} = 0")  # Depuração
-        elif symbol_table[var] == 'text':  # Alterado para minúsculas
-            add_code(f"{var} = \"\"")
-            print(f"Adicionando código: {var} = \"\"")  # Depuração
+        if not self.match('RPAREN'):
+            self.error("Esperado ')' após expressão em 'se'")
 
-    # Inicializar variáveis no código Python
-    for var in ids:
-        if symbol_table[var] in ('INT', 'DEC'):
-            add_code(f"{var} = 0")
-            print(f"Adicionando código: {var} = 0")  # Depuração
-        elif symbol_table[var] == 'TEXT':
-            add_code(f"{var} = \"\"")
-            print(f"Adicionando código: {var} = \"\"")  # Depuração
+        self.generator.add_line(f"if {left_expr} {operador_python} {right_expr}:")
+        self.generator.increase_indent()
 
-def p_Tipo(p):
-    '''Tipo : INT
-            | DEC
-            | TEXT'''
-    p[0] = p[1]
+        if not self.match('LBRACE'):
+            self.error("Esperado '{' após condição 'se'")
+        self.bloco()
+        self.generator.decrease_indent()
 
-def p_ListaId(p):
-    '''ListaId : ListaId COMMA ID
-               | ID'''
-    if len(p) == 4:
-        p[0] = p[1] + [p[3]]
-    else:
-        p[0] = [p[1]]
+        if not self.match('RBRACE'):
+            self.error("Esperado '}' após bloco 'dadoQue'")
 
-# Nova regra para comandos
-def p_Comandos_multiple(p):
-    'Comandos : Comandos Cmd'
-    pass
 
-def p_Comandos_single(p):
-    'Comandos : Cmd'
-    pass
+    def error(self, message="Erro de Sintaxe"):
+        current_token = self.tokens[self.position] if self.position < len(self.tokens) else "EOF"
+        raise SyntaxError(f"{message} no token {current_token} na posição {self.position}")
 
-# Comando
-def p_Cmd(p):
-    '''Cmd : CmdLeitura
-           | CmdEscrita
-           | CmdExpr
-           | CmdIf
-           | WhileStmt
-           | ForStmt'''
-    pass
+    def parse(self):
+        self.program()
+        return self.generator.get_code()
 
-# Comando de leitura
-def p_CmdLeitura(p):
-    'CmdLeitura : LEIA LPAREN ID RPAREN SEMICOLON'
-    var = p[3]
-    if var not in symbol_table:
-        print(f"Erro: Variável '{var}' não declarada antes da leitura.")
-        sys.exit(1)
-    var_type = symbol_table[var]
-    if var_type == 'INT':
-        add_code(f"{var} = int(input())")
-    elif var_type == 'DEC':
-        add_code(f"{var} = float(input())")
-    elif var_type == 'TEXT':
-        add_code(f"{var} = input()")
+    def program(self):
+        if not self.match('PROGRAM'):
+            self.error("Esperado 'init'")
+        self.declara()
+        self.bloco()
+        if not self.match('END_PROGRAM'):
+            self.error("Esperado 'fim'")
 
-# Comando de escrita
-def p_CmdEscrita(p):
-    '''CmdEscrita : ESCREVA LPAREN TEXTO RPAREN SEMICOLON
-                  | ESCREVA LPAREN ID RPAREN SEMICOLON'''
-    if p.slice[3].type == 'TEXTO':
-        add_code(f'print("{p[3]}")')
-    else:
-        var = p[3]
-        if var not in symbol_table:
-            print(f"Erro: Variável '{var}' não declarada antes da escrita.")
-            sys.exit(1)
-        add_code(f'print({var})')
+    def declara(self):
+        while self.tokens[self.position][0] in ['INT', 'DECIMAL', 'TEXT']:
+            tipo = self.tipo()
+            ids = self.id_list()
+            for var in ids:
+                self.semantic_analyzer.declare_variable(var, tipo)
+                if tipo == "int":
+                    self.generator.add_line(f"{var} = 0  # int")
+                elif tipo == "dec":
+                    self.generator.add_line(f"{var} = 0.0  # float")
+                elif tipo == "texto":
+                    self.generator.add_line(f"{var} = ''  # str")
+            if not self.match('TERMINATOR'):
+                self.error("Esperado '.' após declaração")
 
-# Comando de atribuição
-def p_CmdExpr(p):
-    'CmdExpr : AssignStmt SEMICOLON'
-    add_code(p[1])
+    def tipo(self):
+        if self.match('INT'):
+            return "int"
+        elif self.match('DECIMAL'):
+            return "dec"
+        elif self.match('TEXT'):
+            return "texto"
+        else:
+            self.error("Tipo de variável esperado")
 
-# AssignStmt
-def p_AssignStmt(p):
-    'AssignStmt : ID ASSIGN Expr'
-    var = p[1]
-    expr = p[3]
-    if var not in symbol_table:
-        print(f"Erro: Variável '{var}' não declarada antes da atribuição.")
-        sys.exit(1)
-    p[0] = f"{var} = {expr}"
+    def id_list(self):
+        ids = []
+        if not self.match('ID'):
+            self.error("Esperado identificador")
+        ids.append(self.tokens[self.position - 1][1])
+        while self.match('COMMA'):
+            if not self.match('ID'):
+                self.error("Esperado identificador após ','")
+            ids.append(self.tokens[self.position - 1][1])
+        return ids
 
-# Expressão
-def p_Expr_plus(p):
-    'Expr : Expr PLUS Termo'
-    p[0] = f"({p[1]} + {p[3]})"
+    def bloco(self):
+        while self.tokens[self.position][0] in ['READ', 'WRITE', 'ID', 'IF', 'WHILE', 'FOR']:
+            self.cmd()
 
-def p_Expr_minus(p):
-    'Expr : Expr MINUS Termo'
-    p[0] = f"({p[1]} - {p[3]})"
+    def cmd(self):
+        if self.match('READ'):
+            self.cmd_leitura()
+        elif self.match('WRITE'):
+            self.cmd_escrita()
+        elif self.match('IF'):
+            self.cmd_if()
+        elif self.match('WHILE'):
+            self.cmd_while() 
+        elif self.match('FOR'):
+            self.cmd_para()
+        elif self.tokens[self.position][0] == 'ID' and self.tokens[self.position + 1][0] == 'ASSIGN':
+            self.cmd_expr()
+        else:
+            self.error("Comando inválido")
 
-def p_Expr_term(p):
-    'Expr : Termo'
-    p[0] = p[1]
+    def cmd_while(self):
+        if not self.match('LPAREN'):
+            self.error("Esperado '(' após 'enquanto'")
 
-# Termo
-def p_Termo_times(p):
-    'Termo : Termo TIMES Fator'
-    p[0] = f"({p[1]} * {p[3]})"
+        left_expr, left_type = self.expr()
 
-def p_Termo_divide(p):
-    'Termo : Termo DIVIDE Fator'
-    p[0] = f"({p[1]} / {p[3]})"
+        if not self.match('REL_OP'):
+            self.error("Operador relacional esperado em 'enquanto'")
+        operador = self.tokens[self.position - 1][1]
+        operador_python = self.parse_operador_relacional(operador)
 
-def p_Termo_fator(p):
-    'Termo : Fator'
-    p[0] = p[1]
+        right_expr, right_type = self.expr()
 
-# Fator
-def p_Fator_num(p):
-    'Fator : NUM'
-    p[0] = str(p[1])
+        if not self.match('RPAREN'):
+            self.error("Esperado ')' após expressão em 'enquanto'")
 
-def p_Fator_id(p):
-    'Fator : ID'
-    var = p[1]
-    if var not in symbol_table:
-        print(f"Erro: Variável '{var}' não declarada antes do uso.")
-        sys.exit(1)
-    p[0] = var
+        self.generator.add_line(f"while {left_expr} {operador_python} {right_expr}:")
+        self.generator.increase_indent()
 
-def p_Fator_expr(p):
-    'Fator : LPAREN Expr RPAREN'
-    p[0] = f"({p[2]})"
+        if not self.match('LBRACE'):
+            self.error("Esperado '{' após condição 'enquanto'")
+        self.bloco()
+        self.generator.decrease_indent()
 
-# Comando if sem manipulação direta de indentação
-def p_CmdIf(p):
-    '''CmdIf : IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE SEMICOLON
-             | IF LPAREN Expr Op_rel Expr RPAREN LBRACE Bloco RBRACE ELSE LBRACE Bloco RBRACE SEMICOLON'''
-    if len(p) == 12:
-        # Com else
-        cond = f"{p[3]} {p[4]} {p[5]}"
-        add_code(f"if {cond}:")
-        # Bloco do if já está indentado
-        add_code("else:")
-        # Bloco do else já está indentado
-    else:
-        # Sem else
-        cond = f"{p[3]} {p[4]} {p[5]}"
-        add_code(f"if {cond}:")
-        # Bloco do if já está indentado
+        if not self.match('RBRACE'):
+            self.error("Esperado '}' após bloco 'enquanto'")
 
-# Operador relacional
-def p_Op_rel(p):
-    '''Op_rel : LT
-              | GT
-              | LE
-              | GE
-              | NE
-              | EQ'''
-    p[0] = p[1]
 
-# Comando while sem manipulação direta de indentação
-def p_WhileStmt(p):
-    'WhileStmt : WHILE LPAREN Cond RPAREN LBRACE Bloco RBRACE SEMICOLON'
-    cond = p[3]
-    add_code(f"while {cond}:")
-    # Bloco já está indentado
+    def cmd_leitura(self):
+        if not self.match('LPAREN'):
+            self.error("Esperado '(' após 'leia'")
+        if not self.match('ID'):
+            self.error("Esperado identificador em 'leia'")
+        var_name = self.tokens[self.position - 1][1]
+        var_type = self.semantic_analyzer.check_variable(var_name)
+        if not self.match('RPAREN'):
+            self.error("Esperado ')' após identificador em 'leia'")
+        if not self.match('TERMINATOR'):
+            self.error("Esperado '.' após comando 'leia'")
+        if var_type == "int":
+            self.generator.add_line(f"{var_name} = int(input())")
+        elif var_type == "dec":
+            self.generator.add_line(f"{var_name} = float(input())")
+        elif var_type == "texto":
+            self.generator.add_line(f"{var_name} = input()")
 
-def p_Cond(p):
-    'Cond : Expr Op_rel Expr'
-    p[0] = f"{p[1]} {p[2]} {p[3]}"
+    def cmd_escrita(self):
+        if not self.match('LPAREN'):
+            self.error("Esperado '(' após 'escreva'")
+        if self.match('STRING'):
+            text = self.tokens[self.position - 1][1]
+            self.generator.add_line(f"print({text})")
+        elif self.match('ID'):
+            var_name = self.tokens[self.position - 1][1]
+            self.semantic_analyzer.check_variable(var_name)
+            self.generator.add_line(f"print({var_name})")
+        else:
+            self.error("Esperado string ou identificador em 'escreva'")
+        if not self.match('RPAREN'):
+            self.error("Esperado ')' após 'escreva'")
+        if not self.match('TERMINATOR'):
+            self.error("Esperado '.' após comando 'escreva'")
 
-# Comando for sem manipulação direta de indentação
-def p_ForStmt(p):
-    'ForStmt : FOR LPAREN AssignStmt SEMICOLON Cond SEMICOLON AssignStmt RPAREN LBRACE Bloco RBRACE SEMICOLON'
-    init = p[3]
-    cond = p[5]
-    increment = p[7]
-    # Traduzir para a estrutura equivalente em Python
-    # Usaremos uma estrutura while para simular o for
-    add_code(f"{init}")
-    add_code(f"while {cond}:")
-    enter_block()
-    # Bloco já está indentado
-    exit_block()
-    add_code(f"{increment}")
+    def cmd_expr(self):
+        if not self.match('ID'):
+            self.error("Esperado identificador")
+        var_name = self.tokens[self.position - 1][1]
+        if not self.match('ASSIGN'):
+            self.error("Esperado 'recebe' para atribuição")
+        expression_code, expression_type = self.expr()
+        var_type = self.semantic_analyzer.check_variable(var_name)
+        self.semantic_analyzer.check_type_compatibility(var_name, expression_type)
+        if not self.match('TERMINATOR'):
+            self.error("Esperado '.' após atribuição")
+        self.generator.add_line(f"{var_name} = {expression_code}")
 
-# Bloco com ações de indentação
-def p_Bloco(p):
-    '''Bloco : LBRACE Bloco_actions_start Bloco_contents Bloco_actions_end RBRACE'''
-    pass
 
-def p_Bloco_actions_start(p):
-    'Bloco_actions_start :'
-    enter_block()
 
-def p_Bloco_actions_end(p):
-    'Bloco_actions_end :'
-    exit_block()
+    def expr(self):
+        left_code, left_type = self.termo()
+        while self.match('ADD_OP'):
+            op = self.tokens[self.position - 1][1]
+            op_python = {'mais': '+', 'menos': '-'}.get(op, op)
+            right_code, right_type = self.termo()
+            left_code = f"({left_code} {op_python} {right_code})"
+            left_type = "dec" if left_type == "dec" or right_type == "dec" else "int"
+        return left_code, left_type
 
-def p_Bloco_contents_multiple(p):
-    'Bloco_contents : Bloco_contents Cmd'
-    pass
 
-def p_Bloco_contents_single(p):
-    'Bloco_contents : Cmd'
-    pass
 
-# Regra de erro sintático
-def p_error(p):
-    if p:
-        print(f"Erro de sintaxe em '{p.value}' na linha {p.lineno}")
-    else:
-        print("Erro de sintaxe na entrada.")
-    sys.exit(1)
+    def termo(self):
+        left_code, left_type = self.fator()
+        while self.match('MUL_OP') or self.match('MOD_OP'):
+            op = self.tokens[self.position - 1][1]
+            op_python = {'vezes': '*', 'dividido': '/', 'modulo': '%'}.get(op, op)
+            right_code, right_type = self.fator()
+            left_code = f"({left_code} {op_python} {right_code})"
+            left_type = "dec" if left_type == "dec" or right_type == "dec" else "int"
+        return left_code, left_type
 
-# Construir o parser
-parser = yacc.yacc()
 
-def compile_source(source_code):
-    global code_lines, indent_level
-    code_lines = []
-    indent_level = 1  # Dentro da função main()
-    parser.parse(source_code)
-    main_code = '\n'.join(code_lines)
-    compiled_code = f"def main():\n{main_code}\n\nif __name__ == '__main__':\n    main()"
-    return compiled_code
+    def fator(self):
+        if self.match('NUMBER'):
+            code = self.tokens[self.position - 1][1]
+            return code, "int" if '.' not in code else "dec"
+        elif self.match('ID'):
+           var_name = self.tokens[self.position - 1][1]
+           var_type = self.semantic_analyzer.check_variable(var_name)
+           return var_name, var_type
+        elif self.match('STRING'):
+           string_value = self.tokens[self.position - 1][1]
+           return string_value, "texto"
+        elif self.match('LPAREN'):
+           code, expr_type = self.expr()
+           if not self.match('RPAREN'):
+               self.error("Esperado ')' após expressão")
+           return f"({code})", expr_type
+        else:
+           self.error("Fator esperado")
 
-if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print("Uso: python compiler.py input.lang output.py")
+def read_code(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return file.read()
+
+def compile_to_python(code):
+    tokens = tokenizando(code) 
+    parser = Parser(tokens) 
+    return parser.parse() 
+
+def save_and_run(generated_code, output_file='output.py'):
+    with open(output_file, 'w', encoding='utf-8') as file:
+        file.write(generated_code)
+    
+    print("Gerando...")
+    with open(output_file, 'r', encoding='utf-8') as file:
+        exec(file.read())
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Uso: python main.py <arquivo_de_entrada>")
         sys.exit(1)
 
     input_file = sys.argv[1]
-    output_file = sys.argv[2]
-
-    with open(input_file, 'r') as f:
-        source = f.read()
-
-    try:
-        python_output = compile_source(source)
-    except Exception as e:
-        print(f"Compilação falhou: {e}")
-        sys.exit(1)
-
-    with open(output_file, 'w') as f:
-        f.write("# Código Python gerado a partir do compilador\n")
-        f.write(python_output)
-
-    print(f"Compilação concluída. Código Python gerado em '{output_file}'.")
+    code = read_code(input_file)
+    generated_code = compile_to_python(code)
+    save_and_run(generated_code)
