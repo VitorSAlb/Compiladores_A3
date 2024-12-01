@@ -48,10 +48,13 @@ def lex(code):
                 break
         if not match:
             raise SyntaxError(f'Erro Léxico: caractere inesperado "{code[position]}" na posição {position}')
+    # print(tokens_found)
     return tokens_found
 
 def tokenizando(code):
     return lex(code)
+
+# --------------------------------------------------------------------------------------------------------------
 
 def test_rel_op():
     test_code = "menor_igual maior_igual igual diferente menor maior"
@@ -140,6 +143,7 @@ class Parser:
         if not self.match('REL_OP'):
             self.error("Operador relacional esperado em 'se'")
         operador = self.tokens[self.position - 1][1]
+
         operador_python = self.parse_operador_relacional(operador)
 
         right_expr, right_type = self.expr()
@@ -152,11 +156,23 @@ class Parser:
 
         if not self.match('LBRACE'):
             self.error("Esperado '{' após condição 'se'")
+
         self.bloco()
         self.generator.decrease_indent()
 
         if not self.match('RBRACE'):
             self.error("Esperado '}' após bloco 'dadoQue'")
+
+        if self.match('ELSE'):
+            if not self.match('LBRACE'):
+                self.error("Esperado '{' após 'senao'")
+            self.generator.add_line("else:")
+            self.generator.increase_indent()
+            self.bloco()
+            self.generator.decrease_indent()
+
+            if not self.match('RBRACE'):
+                self.error("Esperado '}' após bloco 'senao'")
 
 
     def error(self, message="Erro de Sintaxe"):
