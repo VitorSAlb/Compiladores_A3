@@ -38,6 +38,7 @@ Cond         : Expr Op_rel Expr.
 AssignStmt   : Id 'recebe' Expr.
 
 ## Exemplo de entrada: ( nossa linguagem )
+- No arquivo [testes.txt](./testes.txt), temos outros exemplos de código
 ``` bash
 init
     dec numero.
