@@ -1,3 +1,14 @@
+# Trabalho A3 - TCC
+
+## Componentes
+
+- Vitor Santana e Albuquerque - 1272215370
+- Lucas Lopes - 1272215973
+- Lucas Lima - 1272215898
+- Wadson Daniel - 1272216683
+
+## [Link do Video](www.youtube.com)
+
 # Gramatica
 
 
