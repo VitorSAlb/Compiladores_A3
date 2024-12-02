@@ -14,28 +14,61 @@
 
 Aqui está a tabela de gramática com base nos tokens definidos:
 
-arduino
-Copiar código
-Programa     : 'init' Declara Bloco 'fim' '.'.
-Declara      : Tipo Id (',' Id)* ';'.
-Tipo         : 'int' | 'dec' | 'texto'.
-Bloco        : (Cmd)+.
-Cmd          : CmdLeitura | CmdEscrita | CmdExpr | CmdIf | WhileStmt | ForStmt.
-CmdLeitura   : 'leia' '(' Id ')' ';'.
-CmdEscrita   : 'escreva' '(' Texto | Id ')' ';'.
-CmdIf        : 'se' '(' Expr Op_rel Expr ')' '{' Cmd+ '}' ('senao' '{' Cmd+ '}')? ';'.
-WhileStmt    : 'enquanto' '(' Cond ')'{ Bloco '}' ';'.
-ForStmt      : 'para' '(' AssignStmt ';' Cond ';' AssignStmt ')' '{' Bloco '}' ';'.
-CmdExpr      : Id 'recebe' Expr ';'.
-Op_rel       : 'menor_igual' | 'maior_igual' | 'igual' | 'diferente' | 'menor' | 'maior'.
-Expr         : Expr 'mais' Termo | Expr 'menos' Termo | Termo.
-Termo        : Termo 'vezes' Fator | Termo 'dividido' Fator | Fator.
-Fator        : Numero | Id | '(' Expr ')'.
-Texto        : '"' (0..9 | a..z | A..Z | ' ')* '"'.
-Numero       : (0..9)+ ('.' (0..9)+)?.
-Id           : (a..z | A..Z) (a..z | A..Z | 0..9)*.
-Cond         : Expr Op_rel Expr.
-AssignStmt   : Id 'recebe' Expr.
+``` bash
+Programa : 'init' Declara Bloco 'fim' '.'.
+
+Declara : Tipo Id (',' Id)* ';'.
+Tipo : 'int' | 'dec' | 'texto'.
+
+Bloco : (Cmd)+.
+
+Cmd : CmdLeitura 
+    | CmdEscrita 
+    | CmdExpr 
+    | CmdIf 
+    | WhileStmt 
+    | ForStmt.
+
+CmdLeitura : 'leia' '(' Id ')' ';'.
+CmdEscrita : 'escreva' '(' Texto | Id ')' ';'.
+
+CmdIf : 'se' '(' Cond ')' '{' Cmd+ '}' ('senao' '{' Cmd+ '}')? ';'.
+
+WhileStmt : 'enquanto' '(' Cond ')' '{' Bloco '}' ';'.
+
+ForStmt : 'para' '(' AssignStmt ';' Cond ';' AssignStmt ')' '{' Bloco '}' ';'.
+
+CmdExpr : Id 'recebe' Expr ';'.
+
+Op_rel : 'menor_igual' 
+       | 'maior_igual' 
+       | 'igual' 
+       | 'diferente' 
+       | 'menor' 
+       | 'maior'.
+
+Expr : Expr 'mais' Termo 
+     | Expr 'menos' Termo 
+     | Termo.
+
+Termo : Termo 'vezes' Fator 
+      | Termo 'dividido' Fator 
+      | Fator.
+
+Fator : Numero 
+      | Id 
+      | '(' Expr ')'.
+
+Texto : '"' (0..9 | a..z | A..Z | ' ')* '"'.
+Numero : (0..9)+ ('.' (0..9)+)?.
+Id : (a..z | A..Z) (a..z | A..Z | 0..9)*.
+
+Cond : Expr Op_rel Expr.
+
+AssignStmt : Id 'recebe' Expr.
+
+
+```
 
 ## Exemplo de entrada: ( nossa linguagem )
 - No arquivo [testes.txt](./testes.txt), temos outros exemplos de código
