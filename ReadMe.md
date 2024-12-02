@@ -7,7 +7,7 @@
 - Lucas Lima - 1272215898
 - Wadson Daniel - 1272216683
 
-## [Link do Video](www.youtube.com)
+## [Link do Video](https://www.youtube.com)
 
 # Gramatica
 
